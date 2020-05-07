@@ -12,15 +12,18 @@ public class Main {
 
     public static void main(String[] args){
         String username, password;
-        List<Integer> networks = new ArrayList<>(), ports = new ArrayList<>();
+        List<Integer> networks, ports;
         List<String> aliases = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         Console con = System.console();
 
-        if(con == null){
-            System.out.println("No console available");
-            return;
-        }
+// USE WHEN TESTING COMPLETE
+
+//        if(con == null){
+//            System.out.println("No console available");
+//            return;
+//        }
+
 try {
     if (args[0].equals("--help") || args[0].equals("-h")) {
         System.out.println("Usage: relay {COMMAND | --help | -h}");
@@ -40,29 +43,36 @@ try {
 
         String[] tempNets, tempPorts, tempAliases;
 
-            if(!(args.length == 4)  && !(args[3].equals("TO"))) {
-                if(!(args.length == 6)  && !(args[3].equals("TO") && !(args[5].equals("WITH")))) {
-                    System.out.println("Syntax invalid, try 'relay --help'");
+
+            if(args.length == 4 && args[2].equals("TO"))
+                ;
+            else if (args.length == 6 && args[2].equals("TO") &&  args[4].equals("WITH")){
+                tempAliases = args[5].split(",");
+                aliases = Arrays.asList(tempAliases);
+            } else {
+                System.out.println("Syntax invalid, try 'relay --help'");
                 return;
             }
-                tempAliases = args[6].split(",");
-                aliases = Arrays.asList(tempAliases);
-            }
 
-        tempNets = args[2].split(",");
-        tempPorts = args[4].split(",");
+        tempNets = args[1].split(",");
+        tempPorts = args[3].split(",");
 
         networks = Arrays.stream(tempNets).mapToInt(Integer::parseInt).boxed().collect(Collectors.toList());
         ports = Arrays.stream(tempPorts).mapToInt(Integer::parseInt).boxed().collect(Collectors.toList());
 
         System.out.print("Enter username: ");
         username = scanner.nextLine();
-        password = new String(con.readPassword("Enter password: "));
+        System.out.print("Enter password: ");
+        password = scanner.nextLine();
+//        password = new String(con.readPassword("Enter password: "));
 
-        for(int i = 0; i< networks.size(); i++){
-            System.out.println("network:" + networks.get(i) + " ports:" + ports.get(i) + " aliases: "+ aliases.get(i));
-            System.out.println(username + " " + password);
-        }
+
+
+
+//        for(int i = 0; i< networks.size(); i++){
+//            System.out.println("network:" + networks.get(i) + " ports:" + ports.get(i) + " aliases: "+ aliases.get(i));
+//            System.out.println(username + " " + password);
+//        }
 
     } else if (args[0].equals("DISPLAY")) {
 
