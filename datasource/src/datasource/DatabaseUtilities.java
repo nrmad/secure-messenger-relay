@@ -1,14 +1,17 @@
 package datasource;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class DatabaseUtilities {
 
     private static DatabaseUtilities databaseUtilities;
     private Connection conn;
+
+    private Pattern aliasPattern = Pattern.compile("\\w{1,255}");
 
     private static final String DB_NAME = "secure_messenger_relay";
     private static final String CONNECTION_STRING = "jdbc:mysql://localhost:3306/?useSSL=false";
@@ -24,6 +27,12 @@ public class DatabaseUtilities {
                                                            "FOREIGN KEY(nid) REFERENCES networks(nid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
     private static final String CREATE_CHATROOM_CONTACTS = "CREATE TABLE IF NOT EXISTS chatroomContacts( rid INTEGER, cid CHAR(88), PRIMARY KEY(rid,cid), " +
                                                            "FOREIGN KEY(rid) REFERENCES chatrooms(rid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
+
+    private static final String UPDATE_NETWORKS = "UPDATE networks SET port = ?, network_alias = ? WHERE nid = ?";
+    private static final String GET_NETWORKS = "SELECT nid, port, network_alias FROM networks";
+
+    private PreparedStatement queryUpdateNetworks;
+    private PreparedStatement queryGetNetworks;
 
     private DatabaseUtilities(String username, String password) throws SQLException{
         openConnection(username, password);
@@ -76,12 +85,9 @@ public class DatabaseUtilities {
     private void closeConnection(){
 
         try {
-//            if (queryInsertContact != null) {
-//                queryInsertContact.close();
-//            }
-//            if (queryInsertAccount != null) {
-//                queryInsertAccount.close();
-//            }
+            if(queryUpdateNetworks != null){
+                queryUpdateNetworks.close();
+            }
             if (conn != null) {
                 conn.close();
             }
@@ -95,10 +101,60 @@ public class DatabaseUtilities {
      */
     private void setupPreparedStatements() throws SQLException{
 
-//            queryInsertContact = conn.prepareStatement(INSERT_CONTACT);
-//            queryInsertAccount = conn.prepareStatement(INSERT_ACCOUNT);
+        queryUpdateNetworks = conn.prepareStatement(UPDATE_NETWORKS);
+        queryGetNetworks = conn.prepareStatement(GET_NETWORKS);
+
+    }
+
+    public boolean updateNetworks(List<Network> networks){
+
+        try {
+            try {
+
+                conn.setAutoCommit(false);
+                queryUpdateNetworks.clearBatch();
+
+                for (Network network : networks) {
+                    if (network.getPort() >= 1024 && network.getPort() <= 65535 && aliasPattern.matcher(network.getNetwork_alias()).matches()) {
+
+                        queryUpdateNetworks.setInt(1, network.getPort());
+                        queryUpdateNetworks.setString(2, network.getNetwork_alias());
+                        queryUpdateNetworks.setInt(3, network.getNid());
+
+                        queryUpdateNetworks.addBatch();
+
+                    } else {
+                        throw new SQLException("Format incorrect");
+                    }
+                }
+
+                if(Arrays.stream(queryUpdateNetworks.executeBatch()).anyMatch(x -> x == 0))
+                        throw new SQLException("update failed");
+                conn.commit();
+                return true;
 
 
+            } catch (SQLException e) {
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }catch (SQLException e){}
 
+        return false;
+    }
+
+    public List<Network> getNetworks() throws SQLException{
+
+        List<Network> networks = new ArrayList<>();
+        ResultSet resultSet = queryGetNetworks.executeQuery();
+           if(resultSet.next()) {
+            while(resultSet.next())
+                networks.add(new Network(resultSet.getInt(1), resultSet.getInt(2),
+                resultSet.getString(3)));
+            return networks;
+           }else {
+               throw new SQLException("no networks exist");
+           }
     }
 }
