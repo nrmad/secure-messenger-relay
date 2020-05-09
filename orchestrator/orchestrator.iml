@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="datasource" />
+    <orderEntry type="module" module-name="security" />
   </component>
 </module>

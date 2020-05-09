@@ -21,72 +21,115 @@ public class DatabaseUtilities {
 
     private static final String CREATE_CONTACTS = "CREATE TABLE IF NOT EXISTS contacts(cid CHAR(88) PRIMARY KEY, alias VARCHAR(255) NOT NULL)";
     private static final String CREATE_NETWORKS = "CREATE TABLE IF NOT EXISTS networks(nid INTEGER PRIMARY KEY, fingerprint CHAR(88) UNIQUE NOT NULL," +
-                                                  "port INTEGER UNIQUE NOT NULL, network_alias VARCHAR(255))";
+            "port INTEGER UNIQUE NOT NULL, network_alias VARCHAR(255) UNIQUE NOT NULL)";
     private static final String CREATE_CHATROOMS = "CREATE TABLE IF NOT EXISTS chatrooms(rid INTEGER PRIMARY KEY, room_alias VARCHAR(255) NOT NULL)";
-    private static final String CREATE_NETWORK_CONTACTS  = "CREATE TABLE IF NOT EXISTS networkContacts( nid INTEGER, cid CHAR(88), PRIMARY KEY(nid,cid), " +
-                                                           "FOREIGN KEY(nid) REFERENCES networks(nid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
+    private static final String CREATE_NETWORK_CONTACTS = "CREATE TABLE IF NOT EXISTS networkContacts( nid INTEGER, cid CHAR(88), PRIMARY KEY(nid,cid), " +
+            "FOREIGN KEY(nid) REFERENCES networks(nid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
     private static final String CREATE_CHATROOM_CONTACTS = "CREATE TABLE IF NOT EXISTS chatroomContacts( rid INTEGER, cid CHAR(88), PRIMARY KEY(rid,cid), " +
-                                                           "FOREIGN KEY(rid) REFERENCES chatrooms(rid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
+            "FOREIGN KEY(rid) REFERENCES chatrooms(rid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
 
     private static final String UPDATE_NETWORKS = "UPDATE networks SET port = ?, network_alias = ? WHERE nid = ?";
-    private static final String GET_NETWORKS = "SELECT nid, port, network_alias FROM networks";
+    private static final String SELECT_NETWORKS = "SELECT nid, port, network_alias FROM networks";
+    private static final String INSERT_NETWORKS = "INSERT INTO networks(nid, fingerprint, port, network_alias) VALUES(?,?,?,?)";
+
+    private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
 
     private PreparedStatement queryUpdateNetworks;
-    private PreparedStatement queryGetNetworks;
+    private PreparedStatement querySelectNetworks;
+    private PreparedStatement queryInsertNetworks;
 
-    private DatabaseUtilities(String username, String password) throws SQLException{
+    private PreparedStatement queryRetrieveMaxNid;
+
+    private int networkCounter;
+
+    private DatabaseUtilities(String username, String password) throws SQLException {
         openConnection(username, password);
         setupPreparedStatements();
+        setupCounters();
     }
 
 
     // NOT SURE WHETHER TO HANDLE EXCEPTION HERE OR NOT
-    public static void setDatabaseUtilities(String username, String password) throws SQLException{
-        if(databaseUtilities == null)
-                databaseUtilities = new DatabaseUtilities(username, password);
+    public static void setDatabaseUtilities(String username, String password) throws SQLException {
+        if (databaseUtilities == null)
+            databaseUtilities = new DatabaseUtilities(username, password);
     }
 
-    public static DatabaseUtilities getInstance(){
-            return databaseUtilities;
+    public static DatabaseUtilities getInstance() {
+        return databaseUtilities;
     }
 
     private void openConnection(String username, String password) throws SQLException {
 
-            conn = DriverManager.getConnection(CONNECTION_STRING, username, password);
-            if(conn != null){
-                setupDatabase();
-            }
+        conn = DriverManager.getConnection(CONNECTION_STRING, username, password);
+        if (conn != null) {
+            setupDatabase();
+        }
 
+    }
+
+    /**
+     * Setup query prepared statements
+     */
+    private void setupPreparedStatements() throws SQLException {
+
+        queryUpdateNetworks = conn.prepareStatement(UPDATE_NETWORKS);
+        querySelectNetworks = conn.prepareStatement(SELECT_NETWORKS);
+        queryInsertNetworks = conn.prepareStatement(INSERT_NETWORKS);
+
+        queryRetrieveMaxNid = conn.prepareStatement(RETRIEVE_MAX_NID);
+    }
+
+    /**
+     * Setup the counter for the nid so we know the next available one on adding new networks
+     */
+    private void setupCounters() {
+
+        try {
+            ResultSet result;
+            result = queryRetrieveMaxNid.executeQuery();
+            if (result.next())
+                networkCounter = result.getInt(1) + 1;
+
+        } catch (SQLException e) {
+            System.out.println("Failed to setup counters: " + e.getMessage());
+        }
     }
 
     /**
      * sets up tables which do not already exist
      */
-    private void setupDatabase() throws SQLException{
+    private void setupDatabase() throws SQLException {
 
-            Statement statement = conn.createStatement();
+        Statement statement = conn.createStatement();
 
-            statement.execute(CREATE_DB);
-            statement.execute(USE_DB);
+        statement.execute(CREATE_DB);
+        statement.execute(USE_DB);
 
-            statement.addBatch(CREATE_CONTACTS);
-            statement.addBatch(CREATE_NETWORKS);
-            statement.addBatch(CREATE_CHATROOMS);
-            statement.addBatch(CREATE_NETWORK_CONTACTS);
-            statement.addBatch(CREATE_CHATROOM_CONTACTS);
+        statement.addBatch(CREATE_CONTACTS);
+        statement.addBatch(CREATE_NETWORKS);
+        statement.addBatch(CREATE_CHATROOMS);
+        statement.addBatch(CREATE_NETWORK_CONTACTS);
+        statement.addBatch(CREATE_CHATROOM_CONTACTS);
 
-            statement.executeBatch();
-
+        statement.executeBatch();
     }
+
 
     /**
      * Closes the connection when the application closes
      */
-    private void closeConnection(){
+    private void closeConnection() {
 
         try {
-            if(queryUpdateNetworks != null){
+            if (queryUpdateNetworks != null) {
                 queryUpdateNetworks.close();
+            }
+            if (querySelectNetworks != null) {
+                querySelectNetworks.close();
+            }
+            if (queryInsertNetworks != null) {
+                queryInsertNetworks.close();
             }
             if (conn != null) {
                 conn.close();
@@ -96,17 +139,8 @@ public class DatabaseUtilities {
         }
     }
 
-    /**
-     * Setup query prepared statements
-     */
-    private void setupPreparedStatements() throws SQLException{
 
-        queryUpdateNetworks = conn.prepareStatement(UPDATE_NETWORKS);
-        queryGetNetworks = conn.prepareStatement(GET_NETWORKS);
-
-    }
-
-    public boolean updateNetworks(List<Network> networks){
+    public boolean updateNetworks(List<Network> networks) {
 
         try {
             try {
@@ -128,8 +162,8 @@ public class DatabaseUtilities {
                     }
                 }
 
-                if(Arrays.stream(queryUpdateNetworks.executeBatch()).anyMatch(x -> x == 0))
-                        throw new SQLException("update failed");
+                if (Arrays.stream(queryUpdateNetworks.executeBatch()).anyMatch(x -> x == 0))
+                    throw new SQLException("update failed");
                 conn.commit();
                 return true;
 
@@ -139,22 +173,55 @@ public class DatabaseUtilities {
             } finally {
                 conn.setAutoCommit(true);
             }
-        }catch (SQLException e){}
+        } catch (SQLException e) {
+        }
 
         return false;
     }
 
-    public List<Network> getNetworks() throws SQLException{
+    public List<Network> getNetworks() throws SQLException {
 
         List<Network> networks = new ArrayList<>();
-        ResultSet resultSet = queryGetNetworks.executeQuery();
-           if(resultSet.next()) {
-            while(resultSet.next())
+        ResultSet resultSet = querySelectNetworks.executeQuery();
+        if (resultSet.next()) {
+            while (resultSet.next())
                 networks.add(new Network(resultSet.getInt(1), resultSet.getInt(2),
-                resultSet.getString(3)));
+                        resultSet.getString(3)));
             return networks;
-           }else {
-               throw new SQLException("no networks exist");
-           }
+        } else {
+            throw new SQLException("no networks exist");
+        }
+    }
+
+    public boolean addNetworks(List<Network> networks) {
+
+        try {
+            try {
+                conn.setAutoCommit(false);
+                queryInsertNetworks.clearBatch();
+
+                for (Network network : networks) {
+                    if (network.getPort() >= 1024 && network.getPort() <= 65535 && aliasPattern.matcher(network.getNetwork_alias()).matches()) {
+                        queryInsertNetworks.setInt(1, networkCounter++);
+                        queryInsertNetworks.setString(2, network.getFingerprint());
+                        queryInsertNetworks.setInt(3, network.getPort());
+                        queryInsertNetworks.setString(3, network.getNetwork_alias());
+                        queryInsertNetworks.addBatch();
+
+                    } else {
+                        throw new SQLException("Format incorrect");
+                    }
+                    queryInsertNetworks.executeBatch();
+                    conn.commit();
+                    return true;
+                }
+            } catch (SQLException e) {
+                System.out.println("failed to add networks" + e.getMessage());
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }catch (SQLException e){}
+        return false;
     }
 }

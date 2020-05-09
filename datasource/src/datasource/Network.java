@@ -7,13 +7,14 @@ public class Network {
     private int port;
     private String network_alias;
 
+
+
     /**
-     * Network constructor used for Networks containing no alias or fingerprint
+     * Network constructor used for Networks containing no alias, fingerprint or port
      * @param nid network id
-     * @param port tls port
      */
-    public Network(int nid, int port){
-        this(nid, "", port, "");
+    public Network(int nid){
+        this(nid, "", -1, "");
     }
 
     /**
@@ -26,13 +27,6 @@ public class Network {
         this(nid, "", port, network_alias);
     }
 
-    /**
-     * Network constructor used for Networks containing only a port (creating new ones)
-     * @param port
-     */
-    public Network(int port){
-        this(-1, "", port);
-    }
 
     /**
      * Network constructor used for Networks containing only port and alias (creating new ones)
@@ -41,16 +35,6 @@ public class Network {
      */
     public Network(int port, String network_alias){
         this(-1, "", port, network_alias);
-    }
-
-    /**
-     * Network constructor used for Networks containing no alias
-     * @param nid netwerk id
-     * @param fingerprint public key fingerprint
-     * @param port tls port
-     */
-    public Network(int nid, String fingerprint, int port){
-        this(nid, fingerprint, port, "");
     }
 
     /**
@@ -81,5 +65,21 @@ public class Network {
 
     public String getNetwork_alias() {
         return network_alias;
+    }
+
+    public void setNid(int nid) {
+        this.nid = nid;
+    }
+
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setNetwork_alias(String network_alias) {
+        this.network_alias = network_alias;
     }
 }
