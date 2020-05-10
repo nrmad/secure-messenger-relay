@@ -54,6 +54,7 @@ public class Main {
                 DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
                 databaseUtilities = DatabaseUtilities.getInstance();
 
+                // !!! This is capable of throwing an exception here either on failure or a lack of results should probably handle with a try catch
                 networks = databaseUtilities.getAllNetworks();
                 printNetworks(networks);
 
@@ -72,20 +73,22 @@ public class Main {
                         networks.add(new Network(tempPort, tempAlias));
                     }
 
-                    String[] credentials = getCredentials();
-                    DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials [1]);
-                    databaseUtilities = DatabaseUtilities.getInstance();
+                    if (!networks.isEmpty()) {
+                        String[] credentials = getCredentials();
+                        DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
+                        databaseUtilities = DatabaseUtilities.getInstance();
 
-                    for (Network network : networks) {
-                        KeyPair kp = SecurityUtilities.generateKeyPair();
-                        X509Certificate serverCertificate = SecurityUtilities.makeV1Certificate(kp.getPrivate(), kp.getPublic(), network.getNetwork_alias());
-                        network.setFingerprint(SecurityUtilities.calculateFingerprint(serverCertificate.getEncoded()));
+                        for (Network network : networks) {
+                            KeyPair kp = SecurityUtilities.generateKeyPair();
+                            X509Certificate serverCertificate = SecurityUtilities.makeV1Certificate(kp.getPrivate(), kp.getPublic(), network.getNetwork_alias());
+                            network.setFingerprint(SecurityUtilities.calculateFingerprint(serverCertificate.getEncoded()));
 
-                        SecurityUtilities.storePrivateKeyEntry(credentials[1], kp.getPrivate(), new X509Certificate[]{serverCertificate}, network.getFingerprint());
-                        SecurityUtilities.storeCertificate(credentials[1], serverCertificate, network.getFingerprint());
+                            SecurityUtilities.storePrivateKeyEntry(credentials[1], kp.getPrivate(), new X509Certificate[]{serverCertificate}, network.getFingerprint());
+                            SecurityUtilities.storeCertificate(credentials[1], serverCertificate, network.getFingerprint());
+                        }
+
+                        success = databaseUtilities.addNetworks(networks);
                     }
-
-                    success = databaseUtilities.addNetworks(networks);
                 }
                 printOutcome(success,"addition successful..", "addition failed, try 'relay --help' for valid syntax");
 
@@ -93,28 +96,33 @@ public class Main {
 
                 String[] tempNets;
 
-                if(args.length == 2){
+                if(args.length == 2) {
 
-                 tempNets = args[1].split(",");
-                 networks = Arrays.stream(tempNets).map(Integer::parseInt).map(Network::new).collect(Collectors.toList());
+                    tempNets = args[1].split(",");
+                    networks = Arrays.stream(tempNets).map(Integer::parseInt).map(Network::new).collect(Collectors.toList());
 
-                  String[] credentials = getCredentials();
-                  DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
-                  databaseUtilities = DatabaseUtilities.getInstance();
+                    if (!networks.isEmpty()) {
+                        String[] credentials = getCredentials();
+                        DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
+                        databaseUtilities = DatabaseUtilities.getInstance();
 
-                  networks = databaseUtilities.getNetworks(networks);
-                  if(databaseUtilities.deleteNetworks(networks)) {
-                      for (Network network : networks) {
-                        SecurityUtilities.deleteCertificate(credentials[1], network.getFingerprint());
-                        SecurityUtilities.deletePrivateKeyEntry(credentials[1], network.getFingerprint());
-                      }
-                      success = true;
-                  }
+                        networks = databaseUtilities.getNetworks(networks);
+                        if (databaseUtilities.deleteNetworks(networks)) {
+                            for (Network network : networks) {
+                                SecurityUtilities.deleteCertificate(credentials[1], network.getFingerprint());
+                                SecurityUtilities.deletePrivateKeyEntry(credentials[1], network.getFingerprint());
+                            }
+                            success = true;
+                        }
+                    }
                 }
                 printOutcome(success, "deletion successful..", "deletion failed, try 'relay --help for valid syntax or relay DISPLAY for networks");
 
             } else if (args[0].equals("START")) {
 
+               // INIT NETWORK THREADS
+
+               // INIT REQUEST THREAD
             }
         } catch (Exception e) {
         }

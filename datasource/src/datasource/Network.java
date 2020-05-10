@@ -1,5 +1,7 @@
 package datasource;
 
+import java.util.Objects;
+
 public class Network {
 
     private int nid;
@@ -82,4 +84,16 @@ public class Network {
     public void setNetwork_alias(String network_alias) {
         this.network_alias = network_alias;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Network network = (Network) o;
+        return nid == network.nid &&
+                port == network.port &&
+                Objects.equals(fingerprint, network.fingerprint) &&
+                Objects.equals(network_alias, network.network_alias);
+    }
+
 }

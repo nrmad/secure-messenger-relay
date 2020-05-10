@@ -202,9 +202,10 @@ public class DatabaseUtilities {
         List<Network> networks = new ArrayList<>();
         ResultSet resultSet = querySelectAllNetworks.executeQuery();
         if (resultSet.next()) {
-            while (resultSet.next())
+            do {
                 networks.add(new Network(resultSet.getInt(1), resultSet.getInt(2),
                         resultSet.getString(3)));
+            } while(resultSet.next());
             return networks;
         } else {
             throw new SQLException("no networks exist");
@@ -223,16 +224,19 @@ public class DatabaseUtilities {
                         queryInsertNetworks.setInt(1, networkCounter++);
                         queryInsertNetworks.setString(2, network.getFingerprint());
                         queryInsertNetworks.setInt(3, network.getPort());
-                        queryInsertNetworks.setString(3, network.getNetwork_alias());
+                        queryInsertNetworks.setString(4, network.getNetwork_alias());
                         queryInsertNetworks.addBatch();
 
                     } else {
                         throw new SQLException("Format incorrect");
                     }
-                    queryInsertNetworks.executeBatch();
-                    conn.commit();
-                    return true;
                 }
+                if(Arrays.stream(queryInsertNetworks.executeBatch()).anyMatch(x -> x == 0))
+                    throw new SQLException("Format incorrect");
+
+                conn.commit();
+                return true;
+
             } catch (SQLException e) {
                 System.out.println("failed to add networks" + e.getMessage());
                 conn.rollback();
@@ -298,9 +302,25 @@ public class DatabaseUtilities {
             queryDeleteNetworkContacts.addBatch();
         }
 
-        if (Arrays.stream(queryDeleteNetworkContacts.executeBatch()).anyMatch(x -> x == 0))
-            throw new SQLException("update failed");
+        queryDeleteNetworkContacts.executeBatch();
     }
 
+    // A TEMPORARY METHOD FOR TESTING PURPOSES
+    public boolean tempMethod() {
+
+        try {
+            Statement statement = conn.createStatement();
+            statement.execute("DELETE FROM networkContacts");
+            statement.execute("DELETE FROM chatroomContacts");
+            statement.execute("DELETE FROM networks");
+            statement.execute("DELETE FROM contacts");
+            statement.execute("DELETE FROM chatrooms");
+
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
 
 }
