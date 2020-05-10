@@ -29,14 +29,21 @@ public class DatabaseUtilities {
             "FOREIGN KEY(rid) REFERENCES chatrooms(rid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
 
     private static final String UPDATE_NETWORKS = "UPDATE networks SET port = ?, network_alias = ? WHERE nid = ?";
-    private static final String SELECT_NETWORKS = "SELECT nid, port, network_alias FROM networks";
+    // ??? MAYBE ALSO PRINT OUT FINGERPRINT
+    private static final String SELECT_ALL_NETWORKS = "SELECT nid, port, network_alias FROM networks";
     private static final String INSERT_NETWORKS = "INSERT INTO networks(nid, fingerprint, port, network_alias) VALUES(?,?,?,?)";
+    private static final String SELECT_NETWORKS = "SELECT fingerprint, port, network_alias FROM networks WHERE nid = ?";
+    private static final String DELETE_NETWORKS = "DELETE FROM networks WHERE nid = ?";
+    private static final String DELETE_NETWORK_CONTACTS = "DELETE FROM networkContacts WHERE nid = ?";
 
     private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
 
     private PreparedStatement queryUpdateNetworks;
-    private PreparedStatement querySelectNetworks;
+    private PreparedStatement querySelectAllNetworks;
     private PreparedStatement queryInsertNetworks;
+    private PreparedStatement querySelectNetworks;
+    private PreparedStatement queryDeleteNetworks;
+    private PreparedStatement queryDeleteNetworkContacts;
 
     private PreparedStatement queryRetrieveMaxNid;
 
@@ -74,8 +81,11 @@ public class DatabaseUtilities {
     private void setupPreparedStatements() throws SQLException {
 
         queryUpdateNetworks = conn.prepareStatement(UPDATE_NETWORKS);
-        querySelectNetworks = conn.prepareStatement(SELECT_NETWORKS);
+        querySelectAllNetworks = conn.prepareStatement(SELECT_ALL_NETWORKS);
         queryInsertNetworks = conn.prepareStatement(INSERT_NETWORKS);
+        querySelectNetworks = conn.prepareStatement(SELECT_NETWORKS);
+        queryDeleteNetworks = conn.prepareStatement(DELETE_NETWORKS);
+        queryDeleteNetworkContacts = conn.prepareStatement(DELETE_NETWORK_CONTACTS);
 
         queryRetrieveMaxNid = conn.prepareStatement(RETRIEVE_MAX_NID);
     }
@@ -90,7 +100,6 @@ public class DatabaseUtilities {
             result = queryRetrieveMaxNid.executeQuery();
             if (result.next())
                 networkCounter = result.getInt(1) + 1;
-
         } catch (SQLException e) {
             System.out.println("Failed to setup counters: " + e.getMessage());
         }
@@ -125,11 +134,20 @@ public class DatabaseUtilities {
             if (queryUpdateNetworks != null) {
                 queryUpdateNetworks.close();
             }
-            if (querySelectNetworks != null) {
-                querySelectNetworks.close();
+            if (querySelectAllNetworks != null) {
+                querySelectAllNetworks.close();
             }
             if (queryInsertNetworks != null) {
                 queryInsertNetworks.close();
+            }
+            if(querySelectNetworks != null){
+                querySelectNetworks.close();
+            }
+            if(queryDeleteNetworks != null){
+                queryDeleteNetworks.close();
+            }
+            if(queryDeleteNetworkContacts != null){
+                queryDeleteNetworkContacts.close();
             }
             if (conn != null) {
                 conn.close();
@@ -179,10 +197,10 @@ public class DatabaseUtilities {
         return false;
     }
 
-    public List<Network> getNetworks() throws SQLException {
+    public List<Network> getAllNetworks() throws SQLException {
 
         List<Network> networks = new ArrayList<>();
-        ResultSet resultSet = querySelectNetworks.executeQuery();
+        ResultSet resultSet = querySelectAllNetworks.executeQuery();
         if (resultSet.next()) {
             while (resultSet.next())
                 networks.add(new Network(resultSet.getInt(1), resultSet.getInt(2),
@@ -224,4 +242,65 @@ public class DatabaseUtilities {
         }catch (SQLException e){}
         return false;
     }
+
+    public List<Network> getNetworks(List<Network> networks) throws SQLException{
+
+        for(Network network : networks){
+            querySelectNetworks.clearParameters();
+            querySelectNetworks.setInt(1,network.getNid());
+            ResultSet resultSet = querySelectNetworks.executeQuery();
+            if(resultSet.next()){
+                network.setFingerprint(resultSet.getString(1));
+                network.setPort(resultSet.getInt(2));
+                network.setNetwork_alias(resultSet.getString(3));
+            } else {
+                throw new SQLException();
+            }
+        }
+        return networks;
+    }
+
+    public boolean deleteNetworks(List<Network> networks){
+
+        try {
+            try {
+                conn.setAutoCommit(false);
+                queryDeleteNetworks.clearBatch();
+
+                deleteNetworkContacts(networks);
+
+                for (Network network : networks) {
+                    queryDeleteNetworks.setInt(1, network.getNid());
+                    queryDeleteNetworks.addBatch();
+                }
+
+                if (Arrays.stream(queryDeleteNetworks.executeBatch()).anyMatch(x -> x == 0))
+                    throw new SQLException("update failed");
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+        }
+        return false;
+
+    }
+
+    private void deleteNetworkContacts(List<Network> networks) throws SQLException{
+
+        queryDeleteNetworkContacts.clearBatch();
+        for(Network network: networks){
+            queryDeleteNetworkContacts.setInt(1,network.getNid());
+            queryDeleteNetworkContacts.addBatch();
+        }
+
+        if (Arrays.stream(queryDeleteNetworkContacts.executeBatch()).anyMatch(x -> x == 0))
+            throw new SQLException("update failed");
+    }
+
+
 }

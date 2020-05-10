@@ -7,8 +7,10 @@ import security.SecurityUtilities;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -44,7 +46,7 @@ public class Main {
                         success = databaseUtilities.updateNetworks(networks);
                     }
                 }
-                printOutcome(success, "update successful..", "update failed, try 'relay DISPLAY' for valid networks");
+                printOutcome(success, "update successful..", "update failed, try 'relay --help' for valid syntax or 'relay DISPLAY' for networks");
             } else if (args[0].equals("DISPLAY")) {
 
                 String[] credentials = getCredentials();
@@ -52,7 +54,7 @@ public class Main {
                 DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
                 databaseUtilities = DatabaseUtilities.getInstance();
 
-                networks = databaseUtilities.getNetworks();
+                networks = databaseUtilities.getAllNetworks();
                 printNetworks(networks);
 
             } else if (args[0].equals("ADD")) {
@@ -71,7 +73,7 @@ public class Main {
                     }
 
                     String[] credentials = getCredentials();
-                    DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
+                    DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials [1]);
                     databaseUtilities = DatabaseUtilities.getInstance();
 
                     for (Network network : networks) {
@@ -79,13 +81,13 @@ public class Main {
                         X509Certificate serverCertificate = SecurityUtilities.makeV1Certificate(kp.getPrivate(), kp.getPublic(), network.getNetwork_alias());
                         network.setFingerprint(SecurityUtilities.calculateFingerprint(serverCertificate.getEncoded()));
 
-                        SecurityUtilities.storePrivateKeyEntry(credentials[1], kp.getPrivate(), new X509Certificate[]{serverCertificate}, network.getNetwork_alias());
-                        SecurityUtilities.storeCertificate(credentials[1], serverCertificate, network.getNetwork_alias());
+                        SecurityUtilities.storePrivateKeyEntry(credentials[1], kp.getPrivate(), new X509Certificate[]{serverCertificate}, network.getFingerprint());
+                        SecurityUtilities.storeCertificate(credentials[1], serverCertificate, network.getFingerprint());
                     }
 
                     success = databaseUtilities.addNetworks(networks);
                 }
-                printOutcome(success,"addition successful..", "addition failed, try 'relay --help' for valid format");
+                printOutcome(success,"addition successful..", "addition failed, try 'relay --help' for valid syntax");
 
             } else if (args[0].equals("DELETE")) {
 
@@ -94,19 +96,22 @@ public class Main {
                 if(args.length == 2){
 
                  tempNets = args[1].split(",");
-                 for(String tempNet : tempNets)
-                    networks.add(new Network(Integer.parseInt(tempNet)));
+                 networks = Arrays.stream(tempNets).map(Integer::parseInt).map(Network::new).collect(Collectors.toList());
 
                   String[] credentials = getCredentials();
                   DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
                   databaseUtilities = DatabaseUtilities.getInstance();
 
-                 for(Network network : networks){
-                     
-                 }
-
+                  networks = databaseUtilities.getNetworks(networks);
+                  if(databaseUtilities.deleteNetworks(networks)) {
+                      for (Network network : networks) {
+                        SecurityUtilities.deleteCertificate(credentials[1], network.getFingerprint());
+                        SecurityUtilities.deletePrivateKeyEntry(credentials[1], network.getFingerprint());
+                      }
+                      success = true;
+                  }
                 }
-
+                printOutcome(success, "deletion successful..", "deletion failed, try 'relay --help for valid syntax or relay DISPLAY for networks");
 
             } else if (args[0].equals("START")) {
 

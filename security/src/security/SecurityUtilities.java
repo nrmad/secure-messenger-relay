@@ -46,44 +46,44 @@ public class SecurityUtilities {
     /**
      * Calls deleteEntry with truststore name
      * @param storePassword the store password
-     * @param network_alias the network alias
+     * @param fingerprint the certificate fingerprint
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    public static void deleteCertificate(String storePassword, String network_alias)
+    public static void deleteCertificate(String storePassword, String fingerprint)
             throws GeneralSecurityException, IOException
     {
-        deleteEntry(storePassword, network_alias, TRUSTSTORE_NAME);
+        deleteEntry(storePassword, fingerprint, TRUSTSTORE_NAME);
     }
 
     /**
      * Calls deleteEntry with the keystore name
      * @param storePassword the store password
-     * @param network_alias the network alias
+     * @param fingerprint the certificate fingerprint
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    public static void deletePrivateKeyEntry(String storePassword, String network_alias)
+    public static void deletePrivateKeyEntry(String storePassword, String fingerprint)
             throws GeneralSecurityException, IOException
     {
-        deleteEntry(storePassword, network_alias, KEYSTORE_NAME);
+        deleteEntry(storePassword, fingerprint, KEYSTORE_NAME);
     }
 
     /**
      * Delete the entry of the provided network_alias from the provided storeName
      * @param storePassword the store password
-     * @param network_alias the network_alias
+     * @param fingerprint the network_alias
      * @param storeName the store name
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    private static void deleteEntry(String storePassword, String network_alias, String storeName)
+    private static void deleteEntry(String storePassword, String fingerprint, String storeName)
             throws GeneralSecurityException, IOException
     {
         char[] password = storePassword.toCharArray();
         KeyStore store = KeyStore.getInstance(storeName, PROVIDER);
         store.load(new FileInputStream(storeName), password);
-        store.deleteEntry(network_alias);
+        store.deleteEntry(fingerprint);
         try(FileOutputStream os = new FileOutputStream(storeName)) {
             store.store(os, password);
         }
@@ -94,17 +94,17 @@ public class SecurityUtilities {
      * Store the trusted certificate for a particular network to the truststore.p12 file
      * @param storePassword the truststore password
      * @param trustedCert the trusted certificate
-     * @param network_alias the network alias for identification
+     * @param fingerprint the certificate fingerprint for identification
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    public static void storeCertificate(String storePassword, X509Certificate trustedCert, String network_alias)
+    public static void storeCertificate(String storePassword, X509Certificate trustedCert, String fingerprint)
             throws GeneralSecurityException, IOException
     {
         char[] password = storePassword.toCharArray();
         KeyStore truststore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
         truststore.load(null, null);
-        truststore.setCertificateEntry(network_alias, trustedCert);
+        truststore.setCertificateEntry(fingerprint, trustedCert);
         try(FileOutputStream os = new FileOutputStream( TRUSTSTORE_NAME)) {
             truststore.store(os, password);
         }
@@ -115,11 +115,11 @@ public class SecurityUtilities {
      * @param storePassword the password of the keystore
      * @param eeKey the the private key to be stored
      * @param eeCertChain the certificate chain to be stored
-     * @param network_alias the network alias for identification
+     * @param fingerprint The certificate fingerprint for identification
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    public static void storePrivateKeyEntry(String storePassword, PrivateKey eeKey, X509Certificate[] eeCertChain, String network_alias)
+    public static void storePrivateKeyEntry(String storePassword, PrivateKey eeKey, X509Certificate[] eeCertChain, String fingerprint)
             throws GeneralSecurityException, IOException
     {
         char[] password = storePassword.toCharArray();
@@ -127,7 +127,7 @@ public class SecurityUtilities {
         KeyStore keystore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
         keystore.load(null, null);
 
-        keystore.setKeyEntry(network_alias, eeKey, null, eeCertChain);
+        keystore.setKeyEntry(fingerprint, eeKey, null, eeCertChain);
 
         try (OutputStream os = new FileOutputStream(KEYSTORE_NAME)) {
             keystore.store(os, password);
