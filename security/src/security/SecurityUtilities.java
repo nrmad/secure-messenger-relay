@@ -16,7 +16,10 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.security.auth.x500.X500Principal;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.X509Certificate;
@@ -35,13 +38,16 @@ public class SecurityUtilities {
     private static final String CERT_FACTORY = "X.509";
     private static final String KEYSTORE_TYPE = "PKCS12";
     private static final String SIGNATURE_ALG = "SHA384with" + ASYMMETRIC_KEY_ALG;
-    private static final String TRUSTSTORE_NAME = "truststore.p12";
-    private static final String KEYSTORE_NAME = "keystore.p12";
     private static final String SECURE_RANDOM_ALG = "SHA1PRNG";
     private static final String AUTH_HASH_DIGEST_ALG = "PBKDF2WithHmacSHA512";
+    private static final File TRUSTSTORE_NAME = new File("../resources/truststore.p12");
+    private static final File KEYSTORE_NAME = new File("../resources/keystore.p12");
+
     private static final int NUM_ITERATIONS = 100000;
 
     private static long serialNumberBase = System.currentTimeMillis();
+
+    // APPARENTLY FUNCTIONALITY TO UPDATE KS PASSWORDS IS GOOD
 
     /**
      * Calls deleteEntry with truststore name
@@ -77,11 +83,11 @@ public class SecurityUtilities {
      * @throws GeneralSecurityException
      * @throws IOException
      */
-    private static void deleteEntry(String storePassword, String fingerprint, String storeName)
+    private static void deleteEntry(String storePassword, String fingerprint, File storeName)
             throws GeneralSecurityException, IOException
     {
         char[] password = storePassword.toCharArray();
-        KeyStore store = KeyStore.getInstance(storeName, PROVIDER);
+        KeyStore store = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
         store.load(new FileInputStream(storeName), password);
         store.deleteEntry(fingerprint);
         try(FileOutputStream os = new FileOutputStream(storeName)) {
@@ -103,7 +109,11 @@ public class SecurityUtilities {
     {
         char[] password = storePassword.toCharArray();
         KeyStore truststore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
-        truststore.load(null, null);
+        try {
+            truststore.load(new FileInputStream(TRUSTSTORE_NAME), password);
+        }catch (IOException e) {
+            truststore.load(null, null);
+        }
         truststore.setCertificateEntry(fingerprint, trustedCert);
         try(FileOutputStream os = new FileOutputStream( TRUSTSTORE_NAME)) {
             truststore.store(os, password);
@@ -125,11 +135,14 @@ public class SecurityUtilities {
         char[] password = storePassword.toCharArray();
 
         KeyStore keystore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
-        keystore.load(null, null);
-
+        try {
+            keystore.load(new FileInputStream(KEYSTORE_NAME), password);
+        }catch (IOException e) {
+            keystore.load(null, null);
+        }
         keystore.setKeyEntry(fingerprint, eeKey, null, eeCertChain);
 
-        try (OutputStream os = new FileOutputStream(KEYSTORE_NAME)) {
+        try (FileOutputStream os = new FileOutputStream(KEYSTORE_NAME)) {
             keystore.store(os, password);
         }
     }

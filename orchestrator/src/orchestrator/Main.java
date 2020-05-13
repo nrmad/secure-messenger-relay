@@ -2,10 +2,14 @@ package orchestrator;
 
 import datasource.DatabaseUtilities;
 import datasource.Network;
+import org.bouncycastle.operator.OperatorCreationException;
 import security.SecurityUtilities;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,10 +26,18 @@ public class Main {
         try {
             if (args[0].equals("--help") || args[0].equals("-h")) {
                 printHelp();
+                return;
 
-            } else if (args[0].equals("UPDATE")) {
+            }
+
+              String[] credentials = getCredentials();
+              DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
+              databaseUtilities = DatabaseUtilities.getInstance();
+
+            if (args[0].equals("UPDATE")) {
 
                 String[] tempNets, tempPorts, tempAliases;
+
                 if ((args.length == 6 && args[2].equals("TO") && args[4].equals("WITH"))) {
 
                     tempAliases = args[5].split(",");
@@ -39,20 +51,39 @@ public class Main {
                         networks.add(new Network(tempNet, tempPort, tempAlias));
                     }
 
-                    if (!networks.isEmpty()) {
-                        String[] credentials = getCredentials();
-                        DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
-                        databaseUtilities = DatabaseUtilities.getInstance();
+                    if (!networks.isEmpty())
                         success = databaseUtilities.updateNetworks(networks);
+
+                } else if (args.length == 4 && args[2].equals("TO")) {
+
+                    tempNets = args[1].split(",");
+                    tempPorts = args[3].split(",");
+
+                    for (int i = 0; i < tempNets.length; i++) {
+                        int tempNet = Integer.parseInt(tempNets[i]);
+                        int tempPort = Integer.parseInt(tempPorts[i]);
+                        networks.add(new Network(tempNet, tempPort, ""));
                     }
+
+                    if (!networks.isEmpty())
+                        success = databaseUtilities.updateNetworkPorts(networks);
+
+                } else if (args.length == 4 && args[2].equals("WITH")) {
+
+                    tempNets = args[1].split(",");
+                    tempAliases = args[3].split(",");
+
+                    for (int i = 0; i < tempNets.length; i++) {
+                        int tempNet = Integer.parseInt(tempNets[i]);
+                        String tempAlias = tempAliases[i];
+                        networks.add(new Network(tempNet, -1, tempAlias));
+                    }
+                    if (!networks.isEmpty())
+                        success = databaseUtilities.updateNetworkAliases(networks);
                 }
+
                 printOutcome(success, "update successful..", "update failed, try 'relay --help' for valid syntax or 'relay DISPLAY' for networks");
             } else if (args[0].equals("DISPLAY")) {
-
-                String[] credentials = getCredentials();
-
-                DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
-                databaseUtilities = DatabaseUtilities.getInstance();
 
                 // !!! This is capable of throwing an exception here either on failure or a lack of results should probably handle with a try catch
                 networks = databaseUtilities.getAllNetworks();
@@ -74,9 +105,8 @@ public class Main {
                     }
 
                     if (!networks.isEmpty()) {
-                        String[] credentials = getCredentials();
-                        DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
-                        databaseUtilities = DatabaseUtilities.getInstance();
+
+                        
 
                         for (Network network : networks) {
                             KeyPair kp = SecurityUtilities.generateKeyPair();
@@ -90,21 +120,18 @@ public class Main {
                         success = databaseUtilities.addNetworks(networks);
                     }
                 }
-                printOutcome(success,"addition successful..", "addition failed, try 'relay --help' for valid syntax");
+                printOutcome(success, "addition successful..", "addition failed, try 'relay --help' for valid syntax");
 
             } else if (args[0].equals("DELETE")) {
 
                 String[] tempNets;
 
-                if(args.length == 2) {
+                if (args.length == 2) {
 
                     tempNets = args[1].split(",");
                     networks = Arrays.stream(tempNets).map(Integer::parseInt).map(Network::new).collect(Collectors.toList());
 
                     if (!networks.isEmpty()) {
-                        String[] credentials = getCredentials();
-                        DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
-                        databaseUtilities = DatabaseUtilities.getInstance();
 
                         networks = databaseUtilities.getNetworks(networks);
                         if (databaseUtilities.deleteNetworks(networks)) {
@@ -120,11 +147,15 @@ public class Main {
 
             } else if (args[0].equals("START")) {
 
-               // INIT NETWORK THREADS
+                // INIT NETWORK THREADS
 
-               // INIT REQUEST THREAD
+                // INIT REQUEST THREAD
             }
-        } catch (Exception e) {
+
+            databaseUtilities.closeConnection();
+
+        } catch (SQLException | GeneralSecurityException | IOException | OperatorCreationException e) {
+            System.out.println("shiz");
         }
 
     }
@@ -132,14 +163,14 @@ public class Main {
     private static void printHelp() {
 
         System.out.println("Usage: relay {COMMAND | --help | -h}");
-        System.out.println("              UPDATE network_list... TO port_list... WITH alias_list...");
+        System.out.println("              UPDATE network_list...  { TO port_list...  | WITH alias_list... | TO port_list... WITH alias_list }");
         System.out.println("                    update a comma separated list of networks to the comma separated list of\n" +
-                           "                    ports with a comma separated list of aliases");
+                "                    ports with a comma separated list of aliases");
         System.out.println("              DISPLAY");
         System.out.println("                    display all networks with their respective ports and aliases");
         System.out.println("              ADD port_list... WITH alias_list...");
         System.out.println("                    add with auto incremented network ids a comma separated list of their\n" +
-                           "                    ports with a comma separated list of aliases");
+                "                    ports with a comma separated list of aliases");
         System.out.println("              DELETE network_list...");
         System.out.println("                    delete a comma separated list of networks");
         System.out.println("              START");
@@ -156,13 +187,13 @@ public class Main {
         System.out.println("------------------------------------------------------");
     }
 
-     private static void printOutcome(boolean success, String successMsg, String failMsg){
+    private static void printOutcome(boolean success, String successMsg, String failMsg) {
 
-        if(success)
+        if (success)
             System.out.println(successMsg);
         else
             System.out.println(failMsg);
-     }
+    }
 
     private static String[] getCredentials() {
 

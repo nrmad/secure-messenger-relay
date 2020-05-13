@@ -44,6 +44,59 @@ public class DatabaseUtilitiesTest {
     }
 
     @org.junit.Test
+    public void updateNetworkPorts(){
+        List<Network> networks = new ArrayList<>();
+        networks.add(new Network(1, 2000, ""));
+        assertFalse(databaseUtilities.updateNetworks(networks));
+
+        // CODE TO ADD NETWORKS SO UPDATES CAN BE SUCCESSFUL
+
+        networks.clear();
+        networks.add(new Network(1, "1",2050, "tom"));
+        networks.add(new Network(2, "2", 3000, "dick" ));
+        networks.add(new Network(3, "3",3005, "harry"));
+
+        databaseUtilities.addNetworks(networks);
+        try{
+            networks = databaseUtilities.getAllNetworks();
+        }catch (SQLException e){}
+
+        for(Network network: networks){
+            network.setPort(network.getPort()+1);
+        }
+
+        assertTrue(databaseUtilities.updateNetworkPorts(networks));
+        System.out.println("here");
+
+    }
+
+    @org.junit.Test
+    public void updateNetworkAliases(){
+        List<Network> networks = new ArrayList<>();
+        networks.add(new Network(1, -1, "james"));
+        assertFalse(databaseUtilities.updateNetworkAliases(networks));
+
+        // CODE TO ADD NETWORKS SO UPDATES CAN BE SUCCESSFUL
+
+        networks.clear();
+        networks.add(new Network(1, "1",2050, "tom"));
+        networks.add(new Network(2, "2", 3000, "dick" ));
+        networks.add(new Network(3, "3",3005, "harry"));
+        databaseUtilities.addNetworks(networks);
+
+        try{
+            networks = databaseUtilities.getAllNetworks();
+        }catch (SQLException e){}
+
+        for(Network network: networks){
+            network.setNetwork_alias(network.getNetwork_alias()+"boi");
+        }
+
+        assertTrue(databaseUtilities.updateNetworkAliases(networks));
+        System.out.println("here");
+    }
+
+    @org.junit.Test
     public void updateNetworks(){
 
         // !!  BOUNDARIES UNTESTED
@@ -58,6 +111,11 @@ public class DatabaseUtilitiesTest {
         networks.add(new Network(2, "2", 3000, "dick" ));
         networks.add(new Network(3, "3",3005, "harry"));
         databaseUtilities.addNetworks(networks);
+
+        try{
+            networks = databaseUtilities.getAllNetworks();
+        }catch (SQLException e){}
+
         for(Network network: networks){
             network.setPort(network.getPort()+1);
             network.setNetwork_alias(network.getNetwork_alias()+"boi");
@@ -82,6 +140,10 @@ public class DatabaseUtilitiesTest {
             networks.add(new Network(2,"2", 3000, "dick"));
             networks.add(new Network(3, "3",3005, "harry"));
             databaseUtilities.addNetworks(networks);
+
+            try{
+                networks = databaseUtilities.getAllNetworks();
+            }catch (SQLException e){}
 
             networks1 = databaseUtilities.getAllNetworks();
             for(int i = 0; i< networks.size(); i++){
@@ -128,6 +190,10 @@ public class DatabaseUtilitiesTest {
         networks.add(new Network(3, "3",3005, "harry"));
         databaseUtilities.addNetworks(networks);
 
+        try{
+            networks = databaseUtilities.getAllNetworks();
+        }catch (SQLException e){}
+
         try {
             networks1 = databaseUtilities.getNetworks(networks.subList(0, 1));
             for (int i = 0; i < networks1.size(); i++) {
@@ -155,6 +221,10 @@ public class DatabaseUtilitiesTest {
         networks.add(new Network(2,"2", 3000, "dick"));
         networks.add(new Network(3, "3",3005, "harry"));
         databaseUtilities.addNetworks(networks);
+
+        try{
+            networks = databaseUtilities.getAllNetworks();
+        }catch (SQLException e){}
 
         assertTrue(databaseUtilities.deleteNetworks(networks));
 

@@ -28,9 +28,11 @@ public class DatabaseUtilities {
     private static final String CREATE_CHATROOM_CONTACTS = "CREATE TABLE IF NOT EXISTS chatroomContacts( rid INTEGER, cid CHAR(88), PRIMARY KEY(rid,cid), " +
             "FOREIGN KEY(rid) REFERENCES chatrooms(rid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
 
+    private static final String UPDATE_NETWORK_PORTS = "UPDATE networks SET port = ? WHERE nid = ?";
+    private static final String UPDATE_NETWORK_ALIASES = "UPDATE networks SET network_alias = ? WHERE nid = ?";
     private static final String UPDATE_NETWORKS = "UPDATE networks SET port = ?, network_alias = ? WHERE nid = ?";
     // ??? MAYBE ALSO PRINT OUT FINGERPRINT
-    private static final String SELECT_ALL_NETWORKS = "SELECT nid, port, network_alias FROM networks";
+    private static final String SELECT_ALL_NETWORKS = "SELECT * FROM networks";
     private static final String INSERT_NETWORKS = "INSERT INTO networks(nid, fingerprint, port, network_alias) VALUES(?,?,?,?)";
     private static final String SELECT_NETWORKS = "SELECT fingerprint, port, network_alias FROM networks WHERE nid = ?";
     private static final String DELETE_NETWORKS = "DELETE FROM networks WHERE nid = ?";
@@ -38,6 +40,8 @@ public class DatabaseUtilities {
 
     private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
 
+    private PreparedStatement queryUpdateNetworkPorts;
+    private PreparedStatement queryUpdateNetworkAliases;
     private PreparedStatement queryUpdateNetworks;
     private PreparedStatement querySelectAllNetworks;
     private PreparedStatement queryInsertNetworks;
@@ -80,6 +84,8 @@ public class DatabaseUtilities {
      */
     private void setupPreparedStatements() throws SQLException {
 
+        queryUpdateNetworkPorts = conn.prepareStatement(UPDATE_NETWORK_PORTS);
+        queryUpdateNetworkAliases = conn.prepareStatement(UPDATE_NETWORK_ALIASES);
         queryUpdateNetworks = conn.prepareStatement(UPDATE_NETWORKS);
         querySelectAllNetworks = conn.prepareStatement(SELECT_ALL_NETWORKS);
         queryInsertNetworks = conn.prepareStatement(INSERT_NETWORKS);
@@ -128,9 +134,15 @@ public class DatabaseUtilities {
     /**
      * Closes the connection when the application closes
      */
-    private void closeConnection() {
+    public void closeConnection() {
 
         try {
+            if(queryUpdateNetworkPorts != null){
+                queryUpdateNetworkPorts.close();
+            }
+            if(queryUpdateNetworkAliases != null){
+                queryUpdateNetworkAliases.close();
+            }
             if (queryUpdateNetworks != null) {
                 queryUpdateNetworks.close();
             }
@@ -152,17 +164,97 @@ public class DatabaseUtilities {
             if (conn != null) {
                 conn.close();
             }
+            databaseUtilities = null;
+
         } catch (SQLException e) {
             System.out.println("Failed to close connection: " + e.getMessage());
         }
     }
 
+    /**
+     * Update the specified network ports
+     * @param networks networks to update
+     * @return whether the method succeeded or not
+     */
+    public boolean updateNetworkPorts(List<Network> networks){
+        try {
+            try {
+                conn.setAutoCommit(false);
+                queryUpdateNetworkPorts.clearBatch();
 
+                for (Network network : networks) {
+                    if (network.getPort() >= 1024 && network.getPort() <= 65535) {
+
+                        queryUpdateNetworkPorts.setInt(1, network.getPort());
+                        queryUpdateNetworkPorts.setInt(2, network.getNid());
+                        queryUpdateNetworkPorts.addBatch();
+
+                    } else {
+                        throw new SQLException("Format incorrect");
+                    }
+                }
+
+                if (Arrays.stream(queryUpdateNetworkPorts.executeBatch()).anyMatch(x -> x == 0))
+                    throw new SQLException("update failed");
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+        }
+
+        return false;
+    }
+
+    /**
+     * Update the specified network aliases
+     * @param networks the networks to update
+     * @return whether the method succeeded or not
+     */
+    public boolean updateNetworkAliases(List<Network> networks){
+        try {
+            try {
+                conn.setAutoCommit(false);
+                queryUpdateNetworkAliases.clearBatch();
+
+
+                for (Network network : networks) {
+                    if (aliasPattern.matcher(network.getNetwork_alias()).matches()) {
+
+                        queryUpdateNetworkAliases.setString(1, network.getNetwork_alias());
+                        queryUpdateNetworkAliases.setInt(2, network.getNid());
+                        queryUpdateNetworkAliases.addBatch();
+
+                    } else {
+                        throw new SQLException("Format incorrect");
+                    }
+                }
+
+                if (Arrays.stream(queryUpdateNetworkAliases.executeBatch()).anyMatch(x -> x == 0))
+                    throw new SQLException("update failed");
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+        }
+        return false;
+    }
+
+
+    // MUST BE UPDATED TO ALLOW SELECTION OF JUST PORTS OR ALIASES
     public boolean updateNetworks(List<Network> networks) {
 
         try {
             try {
-
                 conn.setAutoCommit(false);
                 queryUpdateNetworks.clearBatch();
 
@@ -172,7 +264,6 @@ public class DatabaseUtilities {
                         queryUpdateNetworks.setInt(1, network.getPort());
                         queryUpdateNetworks.setString(2, network.getNetwork_alias());
                         queryUpdateNetworks.setInt(3, network.getNid());
-
                         queryUpdateNetworks.addBatch();
 
                     } else {
@@ -184,7 +275,6 @@ public class DatabaseUtilities {
                     throw new SQLException("update failed");
                 conn.commit();
                 return true;
-
 
             } catch (SQLException e) {
                 conn.rollback();
@@ -203,8 +293,8 @@ public class DatabaseUtilities {
         ResultSet resultSet = querySelectAllNetworks.executeQuery();
         if (resultSet.next()) {
             do {
-                networks.add(new Network(resultSet.getInt(1), resultSet.getInt(2),
-                        resultSet.getString(3)));
+                networks.add(new Network(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),
+                        resultSet.getString(4)));
             } while(resultSet.next());
             return networks;
         } else {
@@ -263,6 +353,7 @@ public class DatabaseUtilities {
         }
         return networks;
     }
+
 
     public boolean deleteNetworks(List<Network> networks){
 
