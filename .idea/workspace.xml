@@ -2,16 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6359fa30-0bd1-4051-86c6-4df76536ea28" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datasource/src/datasource/Contact.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/module-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/networking/ClientThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/networking/NetworkConfiguration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/networking/NetworkThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/networking/RecieverClientThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/networking/RequestThread.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/networking/SecureSocketManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/networking/SenderClientThread.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/orchestrator.iml" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/orchestrator.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/src/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/orchestrator/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/orchestrator/module-info.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/orchestrator/orchestrator/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/orchestrator/orchestrator/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/networking.iml" beforeDir="false" afterPath="$PROJECT_DIR$/networking/networking.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/security/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/security/module-info.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/security/security/SecurityUtilities.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/security/security/SecurityUtilities.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/keystore.p12" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/truststore.p12" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/security/security.iml" beforeDir="false" afterPath="$PROJECT_DIR$/security/security.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/security/src/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/security/src/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -27,64 +35,82 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/security/src/security/SecurityUtilities.java">
+        <entry file="file://$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="874">
-              <caret line="81" column="8" selection-start-line="81" selection-start-column="8" selection-end-line="81" selection-end-column="8" />
+            <state relative-caret-position="60">
+              <caret line="4" column="59" selection-start-line="4" selection-start-column="59" selection-end-line="4" selection-end-column="59" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/networking/src/networking/NetworkThread.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="345">
+              <caret line="41" column="59" selection-start-line="41" selection-start-column="59" selection-end-line="41" selection-end-column="59" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="148">
+              <caret line="49" column="68" lean-forward="true" selection-start-line="49" selection-start-column="68" selection-end-line="49" selection-end-column="68" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java">
+        <entry file="file://$PROJECT_DIR$/networking/src/networking/ClientThread.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="59">
-              <caret line="222" column="31" selection-start-line="222" selection-start-column="31" selection-end-line="222" selection-end-column="31" />
+            <state relative-caret-position="705">
+              <caret line="47" column="9" selection-start-line="47" selection-start-column="9" selection-end-line="47" selection-end-column="9" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/util/Scanner.java">
+        <entry file="file://$PROJECT_DIR$/networking/src/networking/SenderClientThread.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="1650" selection-start-line="1650" selection-end-line="1650" />
+            <state relative-caret-position="390">
+              <caret line="26" column="39" selection-start-line="26" selection-start-column="39" selection-end-line="26" selection-end-column="39" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/relevant-commands.txt">
+        <entry file="file://$PROJECT_DIR$/networking/src/networking/RecieverClientThread.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="15">
-              <caret line="1" column="33" lean-forward="true" selection-start-line="1" selection-start-column="33" selection-end-line="1" selection-end-column="33" />
+            <state relative-caret-position="369">
+              <caret line="26" column="23" lean-forward="true" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/datasource/src/datasource/Network.java">
+        <entry file="file://$PROJECT_DIR$/networking/src/networking/SecureSocketManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="71" column="33" lean-forward="true" selection-start-line="71" selection-start-column="33" selection-end-line="71" selection-end-column="33" />
+            <state relative-caret-position="210">
+              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
-              <caret line="31" column="39" lean-forward="true" selection-start-line="31" selection-start-column="39" selection-end-line="31" selection-end-column="39" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/orchestrator/src/module-info.java">
+        <entry file="file://$PROJECT_DIR$/networking/src/networking/NetworkConfiguration.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="75">
-              <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
+              <caret line="5" column="35" lean-forward="true" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/networking/src/module-info.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="45">
+              <caret line="3" column="1" lean-forward="true" selection-start-line="3" selection-start-column="1" selection-end-line="3" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -94,9 +120,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
-        <option value="module-info" />
         <option value="JUnit4 Test Class" />
+        <option value="module-info" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -105,6 +131,7 @@
       <find>chat</find>
       <find>getSubjectX50</find>
       <find>getNetw</find>
+      <find>load()</find>
     </findStrings>
     <replaceStrings>
       <replace>network</replace>
@@ -117,15 +144,25 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/datasource/src/module-info.java" />
-        <option value="$PROJECT_DIR$/security/src/module-info.java" />
         <option value="$PROJECT_DIR$/datasource/src/datasource/Network.java" />
         <option value="$PROJECT_DIR$/orchestrator/src/module-info.java" />
         <option value="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" />
         <option value="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" />
         <option value="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" />
-        <option value="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/relevant-commands.txt" />
         <option value="$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java" />
+        <option value="$PROJECT_DIR$/security/src/module-info.java" />
+        <option value="$PROJECT_DIR$/security/src/security/SecurityUtilitiesTest.java" />
+        <option value="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" />
+        <option value="$PROJECT_DIR$/datasource/src/datasource/Contacts.java" />
+        <option value="$PROJECT_DIR$/networking/src/networking/SecureSocketManager.java" />
+        <option value="$PROJECT_DIR$/networking/src/networking/NetworkThread.java" />
+        <option value="$PROJECT_DIR$/networking/src/module-info.java" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/notes.txt" />
+        <option value="$PROJECT_DIR$/networking/src/networking/NetworkConfiguration.java" />
+        <option value="$PROJECT_DIR$/networking/src/networking/SenderClientThread.java" />
+        <option value="$PROJECT_DIR$/networking/src/networking/RecieverClientThread.java" />
+        <option value="$PROJECT_DIR$/networking/src/networking/ClientThread.java" />
       </list>
     </option>
   </component>
@@ -159,6 +196,55 @@
             <path>
               <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
               <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="datasource" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="datasource" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="datasource" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="datasource" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="networking" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="networking" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="networking" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="networking" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="orchestrator" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="orchestrator" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="secure-messenger-relay" type="b2602c69:ProjectViewProjectNode" />
+              <item name="secure-messenger-relay" type="462c0819:PsiDirectoryNode" />
+              <item name="orchestrator" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="orchestrator" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -202,7 +288,7 @@
     <property name="Downloaded.Files.Path.Enabled" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1589378359061" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1589823593349" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
     <property name="create.test.in.the.same.root" value="true" />
@@ -210,10 +296,11 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.5" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
   </component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.RecentsKey">
+      <recent name="security" />
       <recent name="orchestrator" />
       <recent name="datasource" />
     </key>
@@ -233,7 +320,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.MainTest">
+  <component name="RunManager" selected="JUnit.MainTest.mainAdd">
     <configuration name="MainTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="orchestrator" />
       <extension name="coverage">
@@ -280,22 +367,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MainTest.mainDelete" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="orchestrator" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="orchestrator.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="orchestrator" />
-      <option name="MAIN_CLASS_NAME" value="orchestrator.MainTest" />
-      <option name="METHOD_NAME" value="mainDelete" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="MainTest.mainPortUpdate" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="orchestrator" />
       <extension name="coverage">
@@ -312,20 +383,36 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="SecurityUtilitiesTest.loadKeystore" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="security" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="security.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="security" />
+      <option name="MAIN_CLASS_NAME" value="security.SecurityUtilitiesTest" />
+      <option name="METHOD_NAME" value="loadKeystore" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="JUnit.MainTest" />
       <item itemvalue="JUnit.MainTest.mainAdd" />
-      <item itemvalue="JUnit.MainTest.mainDelete" />
       <item itemvalue="JUnit.MainTest.mainPortUpdate" />
       <item itemvalue="JUnit.MainTest.mainAliasPort" />
+      <item itemvalue="JUnit.SecurityUtilitiesTest.loadKeystore" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.MainTest.mainAdd" />
+        <item itemvalue="JUnit.SecurityUtilitiesTest.loadKeystore" />
         <item itemvalue="JUnit.MainTest" />
         <item itemvalue="JUnit.MainTest.mainAliasPort" />
         <item itemvalue="JUnit.MainTest.mainPortUpdate" />
-        <item itemvalue="JUnit.MainTest.mainAdd" />
-        <item itemvalue="JUnit.MainTest.mainDelete" />
       </list>
     </recent_temporary>
   </component>
@@ -343,35 +430,35 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="MainTest_mainUpdate - 2020.05.13 at 14h 52m 12s.xml">
-      <configuration name="MainTest.mainUpdate" configurationId="JUnit" />
+    <history-entry file="SecurityUtilitiesTest_loadKeystore - 2020.05.14 at 15h 54m 34s.xml">
+      <configuration name="SecurityUtilitiesTest.loadKeystore" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="MainTest_mainUpdate - 2020.05.13 at 14h 53m 59s.xml">
-      <configuration name="MainTest.mainUpdate" configurationId="JUnit" />
+    <history-entry file="SecurityUtilitiesTest_loadKeystore - 2020.05.14 at 15h 55m 09s.xml">
+      <configuration name="SecurityUtilitiesTest.loadKeystore" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="MainTest_mainUpdate - 2020.05.13 at 14h 54m 33s.xml">
-      <configuration name="MainTest.mainUpdate" configurationId="JUnit" />
+    <history-entry file="SecurityUtilitiesTest_loadKeystore - 2020.05.14 at 15h 55m 39s.xml">
+      <configuration name="SecurityUtilitiesTest.loadKeystore" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="MainTest_mainDelete - 2020.05.13 at 14h 54m 47s.xml">
-      <configuration name="MainTest.mainDelete" configurationId="JUnit" />
+    <history-entry file="SecurityUtilitiesTest_loadKeystore - 2020.05.14 at 15h 55m 59s.xml">
+      <configuration name="SecurityUtilitiesTest.loadKeystore" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="MainTest_mainAdd - 2020.05.13 at 14h 54m 58s.xml">
+    <history-entry file="SecurityUtilitiesTest_loadKeystore - 2020.05.14 at 15h 56m 30s.xml">
+      <configuration name="SecurityUtilitiesTest.loadKeystore" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="SecurityUtilitiesTest_loadKeystore - 2020.05.14 at 15h 57m 20s.xml">
+      <configuration name="SecurityUtilitiesTest.loadKeystore" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="SecurityUtilitiesTest_loadKeystore - 2020.05.14 at 15h 57m 40s.xml">
+      <configuration name="SecurityUtilitiesTest.loadKeystore" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="MainTest_mainAdd - 2020.05.16 at 12h 54m 24s.xml">
       <configuration name="MainTest.mainAdd" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="MainTest - 2020.05.13 at 14h 55m 26s.xml">
-      <configuration name="MainTest" configurationId="JUnit" />
+    <history-entry file="MainTest_mainAdd - 2020.05.16 at 12h 57m 58s.xml">
+      <configuration name="MainTest.mainAdd" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="MainTest_mainPortUpdate - 2020.05.13 at 14h 57m 18s.xml">
-      <configuration name="MainTest.mainPortUpdate" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="MainTest_mainAliasPort - 2020.05.13 at 14h 59m 09s.xml">
-      <configuration name="MainTest.mainAliasPort" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="MainTest_mainAliasPort - 2020.05.13 at 14h 59m 18s.xml">
-      <configuration name="MainTest.mainAliasPort" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="MainTest - 2020.05.13 at 14h 59m 43s.xml">
-      <configuration name="MainTest" configurationId="JUnit" />
+    <history-entry file="MainTest_mainAdd - 2020.05.17 at 10h 42m 20s.xml">
+      <configuration name="MainTest.mainAdd" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -392,7 +479,7 @@
       <window_info id="UI Designer" order="2" />
       <window_info id="Capture Tool" order="3" />
       <window_info id="Favorites" order="4" sideWeight="0.5013441" side_tool="true" weight="0.24958678" />
-      <window_info content_ui="combo" id="Project" order="5" sideWeight="0.49865592" visible="true" weight="0.19338843" />
+      <window_info active="true" content_ui="combo" id="Project" order="5" sideWeight="0.49865592" visible="true" weight="0.19338843" />
       <window_info id="Structure" order="6" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Version Control" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.5002755" side_tool="true" weight="0.21482277" />
@@ -403,7 +490,7 @@
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32975295" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.4997245" weight="0.21482277" />
       <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.4997245" weight="0.3029001" />
-      <window_info active="true" anchor="bottom" x="1979" y="417" width="1815" height="214" id="Run" order="9" visible="true" weight="0.3329753" />
+      <window_info anchor="bottom" x="1979" y="417" width="1815" height="214" id="Run" order="9" weight="0.3329753" />
       <window_info anchor="right" id="Palette" order="0" />
       <window_info anchor="right" id="Theme Preview" order="1" />
       <window_info anchor="right" id="Capture Analysis" order="2" />
@@ -414,6 +501,34 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="7" weight="0.25" />
       <window_info anchor="right" id="Messages" order="8" weight="0.3294766" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Image Layers" order="0" />
+      <window_info id="Designer" order="1" />
+      <window_info id="UI Designer" order="2" />
+      <window_info id="Capture Tool" order="3" />
+      <window_info id="Favorites" order="4" sideWeight="0.5013441" side_tool="true" weight="0.24958678" />
+      <window_info active="true" content_ui="combo" id="Project" order="5" sideWeight="0.49865592" visible="true" weight="0.19338843" />
+      <window_info id="Structure" order="6" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" order="0" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.5002755" side_tool="true" weight="0.21482277" />
+      <window_info anchor="bottom" id="Message" order="2" />
+      <window_info anchor="bottom" id="Find" order="3" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32975295" />
+      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.4997245" weight="0.21482277" />
+      <window_info anchor="bottom" id="Debug" order="8" sideWeight="0.4997245" visible="true" weight="0.3029001" />
+      <window_info anchor="bottom" x="1979" y="417" width="1815" height="214" id="Run" order="9" weight="0.3329753" />
+      <window_info anchor="right" id="Palette" order="0" />
+      <window_info anchor="right" id="Theme Preview" order="1" />
+      <window_info anchor="right" id="Capture Analysis" order="2" />
+      <window_info anchor="right" id="Palette&#9;" order="3" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="4" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Maven Projects" order="5" weight="0.3294766" />
+      <window_info anchor="right" id="Ant Build" order="6" weight="0.24958678" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="7" weight="0.25" />
+      <window_info anchor="right" id="Messages" order="8" weight="0.3294766" />
+    </layout-to-restore>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -435,9 +550,9 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java</url>
-          <line>35</line>
+          <line>44</line>
           <properties />
-          <option name="timeStamp" value="90" />
+          <option name="timeStamp" value="108" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -447,35 +562,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/gibbons/com/Main.java" />
-    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/io/Console.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4487">
-          <caret line="380" column="25" selection-start-line="380" selection-start-column="18" selection-end-line="380" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/io/PrintStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10629">
-          <caret line="770" column="16" selection-start-line="770" selection-start-column="16" selection-end-line="770" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/lang/System.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="242" column="27" selection-start-line="242" selection-start-column="27" selection-end-line="242" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/Before.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="14" column="18" selection-start-line="14" selection-start-column="18" selection-end-line="14" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/datasource/datasource.iml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -549,38 +635,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/security/src/module-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="35" selection-start-line="2" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/datasource/src/module-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="19" lean-forward="true" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/orchestrator/src/module-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="19" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/share/maven-repo/mysql/mysql-connector-java/5.1.38/mysql-connector-java-5.1.38.jar!/com/mysql/jdbc/ConnectionImpl.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
           <caret line="3410" selection-start-line="3410" selection-end-line="3410" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
         </state>
       </provider>
     </entry>
@@ -610,20 +668,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/orchestrator/keystore.p12">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/security/cert/Certificate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="45" column="70" lean-forward="true" selection-start-line="45" selection-start-column="70" selection-end-line="45" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/security/KeyStore.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="1227" column="7" lean-forward="true" selection-start-line="1227" selection-start-column="7" selection-end-line="1227" selection-end-column="7" />
-        </state>
-      </provider>
     </entry>
     <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/lang/reflect/Method.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -660,6 +704,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/util/Scanner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="1650" selection-start-line="1650" selection-end-line="1650" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/relevant-commands.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
@@ -674,45 +725,185 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/datasource/src/datasource/Network.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="71" column="33" selection-start-line="71" selection-start-column="33" selection-end-line="71" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networking/src/networking/RequestThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="445">
+        <state relative-caret-position="350">
           <caret line="73" lean-forward="true" selection-start-line="73" selection-end-line="73" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/datasource/src/datasource/Network.java">
+    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/security/KeyStore.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="71" column="33" lean-forward="true" selection-start-line="71" selection-start-column="33" selection-end-line="71" selection-end-column="33" />
+        <state relative-caret-position="29715">
+          <caret line="2004" column="10" lean-forward="true" selection-start-line="2004" selection-start-column="10" selection-end-line="2004" selection-end-column="10" />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/util/Scanner.java">
+    <entry file="file://$PROJECT_DIR$/datasource/src/module-info.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="1650" selection-start-line="1650" selection-end-line="1650" />
+        <state relative-caret-position="30">
+          <caret line="2" column="19" lean-forward="true" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java">
+    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/jdk/internal/reflect/DelegatingMethodAccessorImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="204" selection-start-line="204" selection-end-line="204" />
+        <state relative-caret-position="285">
+          <caret line="42" selection-start-line="42" selection-end-line="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/jdk/internal/reflect/NativeMethodAccessorImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="61" selection-start-line="61" selection-end-line="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/security/src/module-info.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="17" selection-start-column="17" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/datasource/src/datasource/Contact.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="21" lean-forward="true" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="15" selection-start-line="15" selection-end-line="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/security/src/security/SecurityUtilitiesTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-138">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/security/cert/Certificate.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="56" column="26" lean-forward="true" selection-start-line="56" selection-start-column="26" selection-end-line="56" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jrt:///usr/lib/jvm/jdk-11.0.5!/java.base/javax/net/ssl/SSLSession.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="259">
+          <caret line="32" column="11" lean-forward="true" selection-start-line="32" selection-start-column="11" selection-end-line="32" selection-end-column="11" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/security/src/security/SecurityUtilities.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="874">
-          <caret line="81" column="8" selection-start-line="81" selection-start-column="8" selection-end-line="81" selection-end-column="8" />
+        <state relative-caret-position="75">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="59" selection-start-line="4" selection-start-column="59" selection-end-line="4" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/orchestrator/src/module-info.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="35" lean-forward="true" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networking/src/module-info.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="1" lean-forward="true" selection-start-line="3" selection-start-column="1" selection-end-line="3" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///usr/lib/jvm/jdk-11.0.5/lib/src.zip!/java.base/java/lang/String.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="792">
+          <caret line="979" column="13" selection-start-line="979" selection-start-column="13" selection-end-line="979" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="59">
-          <caret line="222" column="31" selection-start-line="222" selection-start-column="31" selection-end-line="222" selection-end-column="31" />
+        <state relative-caret-position="148">
+          <caret line="49" column="68" lean-forward="true" selection-start-line="49" selection-start-column="68" selection-end-line="49" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networking/src/networking/NetworkThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="41" column="59" selection-start-line="41" selection-start-column="59" selection-end-line="41" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/notes.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="68" lean-forward="true" selection-start-column="68" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networking/src/networking/NetworkConfiguration.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="35" lean-forward="true" selection-start-line="5" selection-start-column="35" selection-end-line="5" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networking/src/networking/SecureSocketManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networking/src/networking/RecieverClientThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="26" column="23" lean-forward="true" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networking/src/networking/SenderClientThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="26" column="39" selection-start-line="26" selection-start-column="39" selection-end-line="26" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/networking/src/networking/ClientThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="705">
+          <caret line="47" column="9" selection-start-line="47" selection-start-column="9" selection-end-line="47" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -769,7 +960,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>security</last-edited>
+          <last-edited>networking</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

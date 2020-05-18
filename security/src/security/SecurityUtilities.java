@@ -16,10 +16,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.security.auth.x500.X500Principal;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.X509Certificate;
@@ -48,6 +45,39 @@ public class SecurityUtilities {
     private static long serialNumberBase = System.currentTimeMillis();
 
     // APPARENTLY FUNCTIONALITY TO UPDATE KS PASSWORDS IS GOOD
+
+    static KeyStore.PrivateKeyEntry loadKeyEntry(String storePassword, String fingerprint)
+            throws GeneralSecurityException, IOException
+    {
+        KeyStore keystore = loadKeystore(storePassword);
+        KeyStore.ProtectionParameter keyPassword = new KeyStore.PasswordProtection(storePassword.toCharArray());
+        return (KeyStore.PrivateKeyEntry) keystore.getEntry(fingerprint, keyPassword);
+    }
+
+    static KeyStore loadKeystore(String storePassword)
+            throws GeneralSecurityException, IOException
+    {
+        char[] password = storePassword.toCharArray();
+        return load(password, KEYSTORE_NAME);
+    }
+
+    static KeyStore loadTruststore(String storePassword)
+            throws GeneralSecurityException, IOException
+    {
+        char[] password = storePassword.toCharArray();
+        return load(password,   TRUSTSTORE_NAME);
+    }
+
+    private static KeyStore load(char[] password, File store)
+            throws GeneralSecurityException, IOException
+    {
+        KeyStore keyStore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
+        try(InputStream in = new FileInputStream(store)) {
+            keyStore.load(in , password);
+        }
+        return keyStore;
+    }
+
 
     /**
      * Calls deleteEntry with truststore name
