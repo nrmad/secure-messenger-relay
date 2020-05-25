@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 
 public class ClientThread implements Runnable {
 
@@ -25,26 +24,20 @@ public class ClientThread implements Runnable {
     public void run() {
         try {
             // ??? MAYBE HAVE THE QUEUE CONFIGURABLE
-            BlockingQueue<Packet> channel = new ArrayBlockingQueue<Packet>(100);
+            BlockingQueue<Packet> channel = new ArrayBlockingQueue<>(100);
             // ??? DOES THIS CALCULATE THE CORRECT CID
             Certificate[] serverCerts = sslSocket.getSession().getPeerCertificates();
             String cid = SecurityUtilities.calculateFingerprint(serverCerts[0].getEncoded());
-            // SHOULD PROBABLY ASSURE THIS IS ESTABLISHED BEFORE LISTING IT
-//            channelMap.put(cid, pipe.sink());
 
-            // !!! SHOULD PROBABLY USE JUST A LOOP ON BEING INTERRUPTED IF THREADS CAN'T INDIVIDUALLY FAIL
-            CountDownLatch countDownLatch = new CountDownLatch(1);
-
-             Thread reciever = new Thread(new RecieverClientThread(sslSocket, channelMap, channel, cid, countDownLatch));
-             Thread sender = new Thread(new SenderClientThread(sslSocket, channelMap, channel , cid, countDownLatch));
+             Thread reciever = new Thread(new RecieverClientThread(sslSocket, channelMap, channel, cid));
+             Thread sender = new Thread(new SenderClientThread(sslSocket, channelMap, channel , cid));
 
              try {
-                 while (countDownLatch.getCount() > 0)
-                     countDownLatch.await();
-             }catch (InterruptedException e){}
-
-            reciever.interrupt();
-            sender.interrupt();
+                 sender.join();
+             } catch (InterruptedException e){
+                 reciever.interrupt();
+                 sender.interrupt();
+             }
 
         } catch (GeneralSecurityException | IOException e) {
             // LOGGING HERE ON PRODUCTION

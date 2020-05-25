@@ -5,10 +5,10 @@ import java.util.Map;
 
 public enum Type {
     MESSAGE(0),
-    SEND_FAILED(2),
-    END_SESSION(3),
-    ACCEPT_USER(4),
-    REQUEST_USER(5);
+    ACK(1),
+    END_SESSION(2),
+    ACCEPT_USER(3),
+    REQUEST_USER(4);
 
     private final int code;
     private static Map<Integer,Type> map = new HashMap<>();

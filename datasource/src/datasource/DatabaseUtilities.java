@@ -36,7 +36,15 @@ public class DatabaseUtilities {
     private static final String INSERT_NETWORKS = "INSERT INTO networks(nid, fingerprint, port, network_alias) VALUES(?,?,?,?)";
     private static final String SELECT_NETWORKS = "SELECT fingerprint, port, network_alias FROM networks WHERE nid = ?";
     private static final String DELETE_NETWORKS = "DELETE FROM networks WHERE nid = ?";
-    private static final String DELETE_NETWORK_CONTACTS = "DELETE FROM networkContacts WHERE nid = ?";
+    private static final String DELETE_NETWORKCONTACTS_NID = "DELETE FROM networkContacts WHERE nid = ?";
+    private static final String DELETE_NETWORK_CONTACTS = "DELETE FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks ";
+    private static final String SELECT_NETWORK_CONTACTS = "SELECT * FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks n ON n.nid = nc.nid WHERE nid = ?";
+    private static final String INSERT_CONTACT = "INSERT INTO contacts(cid, alias) VALUES(?,?)";
+    private static final String DELETE_CONTACT = "DELETE FROM contacts WHERE cid = ?";
+    private static final String INSERT_NETWORKCONTACTS_CID = "INSERT INTO networkContacts(nid, cid) VALUES (?,?)";
+    private static final String DELETE_NETWORKCONTACTS_CID = "DELETE FROM networkContact WHERE cid = ?";
+
+
 
     private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
 
@@ -47,7 +55,13 @@ public class DatabaseUtilities {
     private PreparedStatement queryInsertNetworks;
     private PreparedStatement querySelectNetworks;
     private PreparedStatement queryDeleteNetworks;
-    private PreparedStatement queryDeleteNetworkContacts;
+    private PreparedStatement queryDeleteNetworkContactsNid;
+    private PreparedStatement querySelectNetworkContacts;
+    private PreparedStatement queryInsertContact;
+    private PreparedStatement queryDeleteContact;
+    private PreparedStatement queryInsertNetworkContactsCid;
+    private PreparedStatement queryDeleteNetworkContactsCid;
+
 
     private PreparedStatement queryRetrieveMaxNid;
 
@@ -91,7 +105,12 @@ public class DatabaseUtilities {
         queryInsertNetworks = conn.prepareStatement(INSERT_NETWORKS);
         querySelectNetworks = conn.prepareStatement(SELECT_NETWORKS);
         queryDeleteNetworks = conn.prepareStatement(DELETE_NETWORKS);
-        queryDeleteNetworkContacts = conn.prepareStatement(DELETE_NETWORK_CONTACTS);
+        queryDeleteNetworkContactsNid = conn.prepareStatement(DELETE_NETWORKCONTACTS_NID);
+        querySelectNetworkContacts = conn.prepareStatement(SELECT_NETWORK_CONTACTS);
+        queryInsertContact = conn.prepareStatement(INSERT_CONTACT);
+        queryDeleteContact = conn.prepareStatement(DELETE_CONTACT);
+        queryInsertNetworkContactsCid = conn.prepareStatement(INSERT_NETWORKCONTACTS_CID);
+        queryDeleteNetworkContactsCid = conn.prepareStatement(DELETE_NETWORKCONTACTS_CID);
 
         queryRetrieveMaxNid = conn.prepareStatement(RETRIEVE_MAX_NID);
     }
@@ -158,8 +177,23 @@ public class DatabaseUtilities {
             if(queryDeleteNetworks != null){
                 queryDeleteNetworks.close();
             }
-            if(queryDeleteNetworkContacts != null){
-                queryDeleteNetworkContacts.close();
+            if(queryDeleteNetworkContactsNid != null){
+                queryDeleteNetworkContactsNid.close();
+            }
+            if(querySelectNetworkContacts != null){
+                querySelectNetworkContacts.close();
+            }
+            if(queryInsertContact != null){
+                queryInsertContact.close();
+            }
+            if(queryDeleteContact != null){
+                queryDeleteContact.close();
+            }
+            if(queryInsertNetworkContactsCid != null){
+                queryInsertNetworkContactsCid.close();
+            }
+            if(queryDeleteNetworkContactsCid != null){
+                queryDeleteNetworkContactsCid.close();
             }
             if (conn != null) {
                 conn.close();
@@ -348,6 +382,7 @@ public class DatabaseUtilities {
                 network.setPort(resultSet.getInt(2));
                 network.setNetwork_alias(resultSet.getString(3));
             } else {
+                // ??? WOULD AN EMPTY ARRAY NOT BE BETTER !!! DON'T THINK SO BECAUSE WE WANT DO DELETE ALL OR NONE
                 throw new SQLException();
             }
         }
@@ -385,15 +420,92 @@ public class DatabaseUtilities {
 
     }
 
+    /**
+     * A private helper to deleteNetworks this method deletes network contacts
+     * @param networks the networks to delete contacts for
+     * @throws SQLException
+     */
     private void deleteNetworkContacts(List<Network> networks) throws SQLException{
 
-        queryDeleteNetworkContacts.clearBatch();
+        queryDeleteNetworkContactsNid.clearBatch();
         for(Network network: networks){
-            queryDeleteNetworkContacts.setInt(1,network.getNid());
-            queryDeleteNetworkContacts.addBatch();
+            queryDeleteNetworkContactsNid.setInt(1,network.getNid());
+            queryDeleteNetworkContactsNid.addBatch();
         }
 
-        queryDeleteNetworkContacts.executeBatch();
+        queryDeleteNetworkContactsNid.executeBatch();
+    }
+
+    /**
+     * gets all the contacts for the specified network
+     * @param network the network to retrieve contacts for
+     * @return the contact list
+     * @throws SQLException
+     */
+    public List<Contact> getNetworkContacts(Network network) throws SQLException{
+
+        List<Contact> contacts = new ArrayList<>();
+        querySelectNetworkContacts.setInt(1, network.getNid());
+        ResultSet resultSet = querySelectNetworkContacts.executeQuery();
+
+        if (resultSet.next()) {
+            do {
+                contacts.add(new Contact(resultSet.getString(1), resultSet.getString(2)));
+            } while (resultSet.next());
+        }
+            return contacts;
+
+    }
+
+
+    public boolean addContact(Contact contact, Network network){
+
+        try {
+            try {
+                conn.setAutoCommit(false);
+                queryInsertContact.setString(1, contact.getCid());
+                if (queryInsertContact.executeUpdate() == 0)
+                    throw new SQLException();
+                addNetworkContact(contact, network);
+                return true;
+            } catch (SQLException e) {
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }catch (SQLException e){}
+        return false;
+    }
+
+    public boolean deleteContact(Contact contact, Network network){
+
+        try {
+            try {
+                conn.setAutoCommit(false);
+                queryDeleteContact.setString(1, contact.getCid());
+                if (queryDeleteContact.executeUpdate() == 0)
+                    throw new SQLException();
+                deleteNetworkContact( contact, network);
+                return true;
+            } catch (SQLException e) {
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }catch (SQLException e){}
+        return false;
+    }
+
+    private void addNetworkContact(Contact contact, Network network) throws SQLException{
+        queryInsertNetworkContactsCid.setInt(1, network.getNid());
+        queryInsertNetworkContactsCid.setString(2, contact.getCid());
+
+
+    }
+
+    private void deleteNetworkContact(Contact contact, Network network){
+
+
     }
 
     // A TEMPORARY METHOD FOR TESTING PURPOSES

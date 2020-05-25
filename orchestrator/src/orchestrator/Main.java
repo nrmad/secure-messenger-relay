@@ -2,18 +2,20 @@ package orchestrator;
 
 import datasource.DatabaseUtilities;
 import datasource.Network;
+import networking.Packet;
+import networking.SecureSocketManager;
 import org.bouncycastle.operator.OperatorCreationException;
 import security.SecurityUtilities;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -81,6 +83,7 @@ public class Main {
                     if (!networks.isEmpty())
                         success = databaseUtilities.updateNetworkAliases(networks);
                 }
+                databaseUtilities.closeConnection();
 
                 printOutcome(success, "update successful..", "update failed, try 'relay --help' for valid syntax or 'relay DISPLAY' for networks");
             } else if (args[0].equals("DISPLAY")) {
@@ -88,6 +91,8 @@ public class Main {
                 // !!! This is capable of throwing an exception here either on failure or a lack of results should probably handle with a try catch
                 networks = databaseUtilities.getAllNetworks();
                 printNetworks(networks);
+                databaseUtilities.closeConnection();
+
 
             } else if (args[0].equals("ADD")) {
 
@@ -121,6 +126,8 @@ public class Main {
                     }
                 }
                 printOutcome(success, "addition successful..", "addition failed, try 'relay --help' for valid syntax");
+                databaseUtilities.closeConnection();
+
 
             } else if (args[0].equals("DELETE")) {
 
@@ -144,17 +151,47 @@ public class Main {
                     }
                 }
                 printOutcome(success, "deletion successful..", "deletion failed, try 'relay --help for valid syntax or relay DISPLAY for networks");
+                databaseUtilities.closeConnection();
 
             } else if (args[0].equals("START")) {
 
+                List<Thread> threads = new ArrayList<>();
                 // INIT NETWORK THREADS
 
+                KeyStore keystore = SecurityUtilities.loadKeystore(credentials[1]);
+                KeyStore truststore = SecurityUtilities.loadTruststore(credentials[1]);
+
+                networks = databaseUtilities.getAllNetworks();
+                HashMap<Integer,ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>> networkMap = new HashMap<>();
+
+                for (Network network: networks) {
+
+                    KeyStore singleKeystore = SecurityUtilities.loadSingleKeystore(keystore, credentials[1], network.getFingerprint());
+                    KeyStore singleTruststore = SecurityUtilities.loadSingleTruststore(truststore, network.getFingerprint());
+                    SecureSocketManager secureSocketManager = new SecureSocketManager(singleKeystore, singleTruststore, credentials[1]);
+                    ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>> channelMap = new ConcurrentHashMap<>();
+
+                    // LOAD THE CHANNELMAP WITH EVERY CONTACT AND AN EMPTY OPTIONAL
+
+                    // SAVE THE CHANNELMAP TO NETWORK MAP WITH ITS NID
+
+                    // START NEW NETWORKTHREAD ??? NEED TO KNOW ABOUT LINUX SERVICES SHOULD THIS OBJECT BE RETAINED
+
+
+                }
+
+
                 // INIT REQUEST THREAD
+
+                // ADD SIGTERM HOOK
+
+                Runtime.getRuntime().addShutdownHook(new ShutdownHook(threads));
             }
 
-            databaseUtilities.closeConnection();
+//            databaseUtilities.closeConnection();
 
         } catch (SQLException | GeneralSecurityException | IOException | OperatorCreationException e) {
+            // WILL HANDLE FAILED DELETE
             System.out.println("shiz");
         }
 

@@ -7,7 +7,6 @@ import java.io.ObjectOutputStream;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 
 import static java.lang.Thread.interrupted;
 
@@ -17,15 +16,12 @@ public class SenderClientThread implements Runnable{
     private final ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>   channelMap;
     private final BlockingQueue<Packet> channel;
     private final String cid;
-    private final CountDownLatch countDownLatch;
 
-
-    public SenderClientThread(SSLSocket sslSocket, ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>  channelMap , BlockingQueue<Packet> channel, String cid, CountDownLatch countDownLatch) {
+    public SenderClientThread(SSLSocket sslSocket, ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>  channelMap , BlockingQueue<Packet> channel, String cid) {
         this.sslSocket = sslSocket;
         this.channelMap = channelMap;
         this.channel = channel;
         this.cid = cid;
-        this.countDownLatch = countDownLatch;
     }
 
     public void run(){
@@ -38,8 +34,8 @@ public class SenderClientThread implements Runnable{
                 try {
                     Packet packet = channel.take();
                     switch(packet.getType()){
+                        case ACK:
                         case MESSAGE:
-                        case SEND_FAILED:
                         case REQUEST_USER:
                             output.writeObject(packet);
                             break;
@@ -48,6 +44,7 @@ public class SenderClientThread implements Runnable{
                                 output.writeObject(packet);
                                 quit = true;
                             }
+                            break;
                     }
                 }catch (InterruptedException e){}
 
@@ -55,7 +52,7 @@ public class SenderClientThread implements Runnable{
         }catch (IOException e){}
         finally {
             channelMap.replace(cid, Optional.empty());
-            countDownLatch.countDown();
+//            countDownLatch.countDown();
         }
 
 

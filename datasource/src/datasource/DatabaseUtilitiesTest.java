@@ -238,6 +238,11 @@ public class DatabaseUtilitiesTest {
         assertFalse(databaseUtilities.deleteNetworks(networks1));
     }
 
+    @org.junit.Test
+    public void getNetworkContacts(){
+
+    }
+
 
 
 

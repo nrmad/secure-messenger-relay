@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static java.lang.Thread.interrupted;
+
 public class NetworkThread implements Runnable {
 
     private SecureSocketManager secureSocketManager;
@@ -36,7 +38,7 @@ public class NetworkThread implements Runnable {
 
             // BEGIN RECEIVING NEW CONNECTION INSTANCES ON THAT PORT AND LOOP
 
-            while(networkConfiguration.getNetworkUp()) {
+            while(!interrupted()) {
 
             try{
                 SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();

@@ -19,6 +19,7 @@ import javax.security.auth.x500.X500Principal;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAKeyGenParameterSpec;
@@ -46,7 +47,7 @@ public class SecurityUtilities {
 
     // APPARENTLY FUNCTIONALITY TO UPDATE KS PASSWORDS IS GOOD
 
-    static KeyStore.PrivateKeyEntry loadKeyEntry(String storePassword, String fingerprint)
+    public static KeyStore.PrivateKeyEntry loadKeyEntry(String storePassword, String fingerprint)
             throws GeneralSecurityException, IOException
     {
         KeyStore keystore = loadKeystore(storePassword);
@@ -54,14 +55,53 @@ public class SecurityUtilities {
         return (KeyStore.PrivateKeyEntry) keystore.getEntry(fingerprint, keyPassword);
     }
 
-    static KeyStore loadKeystore(String storePassword)
+    /**
+     * A workaround for not being able select the key entry for the KeyManager
+     * @param keyStore The saved keystore with all the private key entries for each network
+     * @param storePassword the password
+     * @param fingerprint the cert fingerprint
+     * @return the singleton keystore
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
+    public static KeyStore loadSingleKeystore(KeyStore keyStore, String storePassword, String fingerprint)
+            throws GeneralSecurityException, IOException
+    {
+        KeyStore.ProtectionParameter keyPassword = new KeyStore.PasswordProtection(storePassword.toCharArray());
+        KeyStore.PrivateKeyEntry pke = (KeyStore.PrivateKeyEntry) keyStore.getEntry(fingerprint, keyPassword);
+        KeyStore singleKeystore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
+        singleKeystore.load(null, null);
+        singleKeystore.setEntry(fingerprint, pke, keyPassword);
+        return singleKeystore;
+    }
+
+    /**
+     * A workaround for not being able to select the certificate entry for the TrustManager
+     * @param truststore the saved truststore with all the trusted certificat entries for each network
+     * @param storePassword the password
+     * @param fingerprint the cert fingerprint
+     * @return the singleton keystore
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
+    public static KeyStore loadSingleTruststore(KeyStore truststore, String fingerprint)
+        throws GeneralSecurityException, IOException
+    {
+        Certificate cert = truststore.getCertificate(fingerprint);
+        KeyStore singleKeystore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
+        singleKeystore.load(null, null);
+        singleKeystore.setCertificateEntry(fingerprint, cert);
+        return singleKeystore;
+    }
+
+    public static KeyStore loadKeystore(String storePassword)
             throws GeneralSecurityException, IOException
     {
         char[] password = storePassword.toCharArray();
         return load(password, KEYSTORE_NAME);
     }
 
-    static KeyStore loadTruststore(String storePassword)
+    public static KeyStore loadTruststore(String storePassword)
             throws GeneralSecurityException, IOException
     {
         char[] password = storePassword.toCharArray();
