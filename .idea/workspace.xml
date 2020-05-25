@@ -1,24 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6359fa30-0bd1-4051-86c6-4df76536ea28" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/networking/src/networking/RegisterRequestThread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/ShutdownHook.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/ClientThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/ClientThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/NetworkThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/NetworkThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/RecieverClientThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/RecieverClientThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/RequestThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/RequestThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/SenderClientThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/SenderClientThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/Type.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/Type.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/orchestrator.iml" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/orchestrator.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/src/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" afterDir="false" />
-    </list>
+    <list default="true" id="6359fa30-0bd1-4051-86c6-4df76536ea28" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -34,8 +17,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="451">
-              <caret line="39" column="150" selection-start-line="39" selection-start-column="150" selection-end-line="39" selection-end-column="150" />
+            <state relative-caret-position="346">
+              <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
             </state>
           </provider>
         </entry>
@@ -246,7 +229,7 @@
     <property name="Downloaded.Files.Path.Enabled" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590412155797" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590429356592" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
     <property name="create.test.in.the.same.root" value="true" />
@@ -430,7 +413,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="59" y="-4" width="1861" height="1084" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Image Layers" order="0" />
       <window_info id="Designer" order="1" />
@@ -816,8 +798,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="451">
-          <caret line="39" column="150" selection-start-line="39" selection-start-column="150" selection-end-line="39" selection-end-column="150" />
+        <state relative-caret-position="346">
+          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
         </state>
       </provider>
     </entry>
