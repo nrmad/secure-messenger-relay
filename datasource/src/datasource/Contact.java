@@ -1,5 +1,7 @@
 package datasource;
 
+import java.util.Objects;
+
 public class Contact {
 
 private String cid;
@@ -16,5 +18,14 @@ public Contact(String cid, String alias){
 
     public String getAlias() {
         return alias;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Contact contact = (Contact) o;
+        return Objects.equals(cid, contact.cid) &&
+                Objects.equals(alias, contact.alias);
     }
 }

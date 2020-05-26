@@ -37,12 +37,12 @@ public class DatabaseUtilities {
     private static final String SELECT_NETWORKS = "SELECT fingerprint, port, network_alias FROM networks WHERE nid = ?";
     private static final String DELETE_NETWORKS = "DELETE FROM networks WHERE nid = ?";
     private static final String DELETE_NETWORKCONTACTS_NID = "DELETE FROM networkContacts WHERE nid = ?";
-    private static final String DELETE_NETWORK_CONTACTS = "DELETE FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks ";
-    private static final String SELECT_NETWORK_CONTACTS = "SELECT * FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks n ON n.nid = nc.nid WHERE nid = ?";
+    private static final String DELETE_CONTACTS = "DELETE FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks n ON n.nid = nc.nid WHERE n.nid = ?";
+    private static final String SELECT_CONTACTS = "SELECT * FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks n ON n.nid = nc.nid WHERE n.nid = ?";
     private static final String INSERT_CONTACT = "INSERT INTO contacts(cid, alias) VALUES(?,?)";
     private static final String DELETE_CONTACT = "DELETE FROM contacts WHERE cid = ?";
     private static final String INSERT_NETWORKCONTACTS_CID = "INSERT INTO networkContacts(nid, cid) VALUES (?,?)";
-    private static final String DELETE_NETWORKCONTACTS_CID = "DELETE FROM networkContact WHERE cid = ?";
+    private static final String DELETE_NETWORKCONTACTS_CID = "DELETE FROM networkContacts WHERE nid = ? AND cid = ?";
 
 
 
@@ -56,7 +56,8 @@ public class DatabaseUtilities {
     private PreparedStatement querySelectNetworks;
     private PreparedStatement queryDeleteNetworks;
     private PreparedStatement queryDeleteNetworkContactsNid;
-    private PreparedStatement querySelectNetworkContacts;
+    private PreparedStatement queryDeleteContacts;
+    private PreparedStatement querySelectContacts;
     private PreparedStatement queryInsertContact;
     private PreparedStatement queryDeleteContact;
     private PreparedStatement queryInsertNetworkContactsCid;
@@ -106,7 +107,8 @@ public class DatabaseUtilities {
         querySelectNetworks = conn.prepareStatement(SELECT_NETWORKS);
         queryDeleteNetworks = conn.prepareStatement(DELETE_NETWORKS);
         queryDeleteNetworkContactsNid = conn.prepareStatement(DELETE_NETWORKCONTACTS_NID);
-        querySelectNetworkContacts = conn.prepareStatement(SELECT_NETWORK_CONTACTS);
+        queryDeleteContacts = conn.prepareStatement(DELETE_CONTACTS);
+        querySelectContacts = conn.prepareStatement(SELECT_CONTACTS);
         queryInsertContact = conn.prepareStatement(INSERT_CONTACT);
         queryDeleteContact = conn.prepareStatement(DELETE_CONTACT);
         queryInsertNetworkContactsCid = conn.prepareStatement(INSERT_NETWORKCONTACTS_CID);
@@ -180,8 +182,11 @@ public class DatabaseUtilities {
             if(queryDeleteNetworkContactsNid != null){
                 queryDeleteNetworkContactsNid.close();
             }
-            if(querySelectNetworkContacts != null){
-                querySelectNetworkContacts.close();
+            if(queryDeleteNetworkContactsNid != null){
+                queryDeleteNetworkContactsNid.close();
+            }
+            if(querySelectContacts != null){
+                querySelectContacts.close();
             }
             if(queryInsertContact != null){
                 queryInsertContact.close();
@@ -317,7 +322,6 @@ public class DatabaseUtilities {
             }
         } catch (SQLException e) {
         }
-
         return false;
     }
 
@@ -397,13 +401,13 @@ public class DatabaseUtilities {
                 conn.setAutoCommit(false);
                 queryDeleteNetworks.clearBatch();
 
+                deleteContacts(networks);
                 deleteNetworkContacts(networks);
 
                 for (Network network : networks) {
                     queryDeleteNetworks.setInt(1, network.getNid());
                     queryDeleteNetworks.addBatch();
                 }
-
                 if (Arrays.stream(queryDeleteNetworks.executeBatch()).anyMatch(x -> x == 0))
                     throw new SQLException("update failed");
                 conn.commit();
@@ -417,7 +421,6 @@ public class DatabaseUtilities {
         } catch (SQLException e) {
         }
         return false;
-
     }
 
     /**
@@ -436,6 +439,16 @@ public class DatabaseUtilities {
         queryDeleteNetworkContactsNid.executeBatch();
     }
 
+    private void deleteContacts(List<Network> networks) throws SQLException{
+
+        queryDeleteContacts.clearBatch();
+        for(Network network: networks){
+            queryDeleteContacts.setInt(1, network.getNid());
+            queryDeleteContacts.addBatch();
+        }
+        queryDeleteContacts.executeBatch();
+    }
+
     /**
      * gets all the contacts for the specified network
      * @param network the network to retrieve contacts for
@@ -445,8 +458,8 @@ public class DatabaseUtilities {
     public List<Contact> getNetworkContacts(Network network) throws SQLException{
 
         List<Contact> contacts = new ArrayList<>();
-        querySelectNetworkContacts.setInt(1, network.getNid());
-        ResultSet resultSet = querySelectNetworkContacts.executeQuery();
+        querySelectContacts.setInt(1, network.getNid());
+        ResultSet resultSet = querySelectContacts.executeQuery();
 
         if (resultSet.next()) {
             do {
@@ -454,19 +467,26 @@ public class DatabaseUtilities {
             } while (resultSet.next());
         }
             return contacts;
-
     }
 
 
+    /**
+     * Add a new contact to the database for the specified network
+     * @param contact the contact to add
+     * @param network the network to add it to
+     * @return true for success and false for failure
+     */
     public boolean addContact(Contact contact, Network network){
 
         try {
             try {
                 conn.setAutoCommit(false);
                 queryInsertContact.setString(1, contact.getCid());
+                queryInsertContact.setString(2,contact.getAlias());
                 if (queryInsertContact.executeUpdate() == 0)
                     throw new SQLException();
                 addNetworkContact(contact, network);
+                conn.commit();
                 return true;
             } catch (SQLException e) {
                 conn.rollback();
@@ -477,15 +497,22 @@ public class DatabaseUtilities {
         return false;
     }
 
+    /**
+     * delete a contact from the database for the specified network
+     * @param contact the contact to be deleted
+     * @param network the network its being deleted from
+     * @return true for success and false for failure
+     */
     public boolean deleteContact(Contact contact, Network network){
 
         try {
             try {
                 conn.setAutoCommit(false);
+                deleteNetworkContact( contact, network);
                 queryDeleteContact.setString(1, contact.getCid());
                 if (queryDeleteContact.executeUpdate() == 0)
                     throw new SQLException();
-                deleteNetworkContact( contact, network);
+                conn.commit();
                 return true;
             } catch (SQLException e) {
                 conn.rollback();
@@ -496,16 +523,33 @@ public class DatabaseUtilities {
         return false;
     }
 
+    /**
+     * adds the associative entity record connecting the new contact and the network it pertains to
+     * @param contact the contact to connect
+     * @param network the network to connect it to
+     * @throws SQLException
+     */
     private void addNetworkContact(Contact contact, Network network) throws SQLException{
         queryInsertNetworkContactsCid.setInt(1, network.getNid());
         queryInsertNetworkContactsCid.setString(2, contact.getCid());
+        if (queryInsertNetworkContactsCid.executeUpdate()== 0)
+            throw new SQLException();
+
 
 
     }
 
-    private void deleteNetworkContact(Contact contact, Network network){
-
-
+    /**
+     * deletes the associative entity record connecting the specified contact do its pertaining network
+     * @param contact the contact to disconnect
+     * @param network the network it is to be disconnected from
+     * @throws SQLException
+     */
+    private void deleteNetworkContact(Contact contact, Network network) throws SQLException{
+        queryDeleteNetworkContactsCid.setInt(1, network.getNid());
+        queryDeleteNetworkContactsCid.setString(2, contact.getCid());
+        if(queryDeleteNetworkContactsCid.executeUpdate() == 0)
+            throw new SQLException();
     }
 
     // A TEMPORARY METHOD FOR TESTING PURPOSES
