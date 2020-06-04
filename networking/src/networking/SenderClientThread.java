@@ -8,8 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.lang.Thread.interrupted;
-
 public class SenderClientThread implements Runnable{
 
     private final SSLSocket sslSocket;
@@ -30,13 +28,14 @@ public class SenderClientThread implements Runnable{
         channelMap.replace(cid, Optional.of(channel));
 
         try (ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(sslSocket.getOutputStream()))) {
-            while (!interrupted() && !quit) {
-                try {
+            while (!quit) {
+
                     Packet packet = channel.take();
                     switch(packet.getType()){
                         case ACK:
                         case MESSAGE:
                         case REQUEST_USER:
+                        case RELAY_SHUTDOWN:
                             output.writeObject(packet);
                             break;
                         case END_SESSION:
@@ -46,10 +45,8 @@ public class SenderClientThread implements Runnable{
                             }
                             break;
                     }
-                }catch (InterruptedException e){}
-
             }
-        }catch (IOException e){}
+        }catch (IOException | InterruptedException e){}
         finally {
             channelMap.replace(cid, Optional.empty());
 //            countDownLatch.countDown();

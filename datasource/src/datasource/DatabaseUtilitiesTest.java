@@ -152,7 +152,7 @@ public class DatabaseUtilitiesTest {
                 assertEquals(networks.get(i).getNetwork_alias(), networks1.get(i).getNetwork_alias());
             }
         }catch (SQLException e){
-            fail("fucked it");
+            fail("failed it");
         }
     }
 

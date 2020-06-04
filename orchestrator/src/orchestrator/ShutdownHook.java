@@ -1,19 +1,17 @@
 package orchestrator;
 
-import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class ShutdownHook extends Thread {
 
-    private List<Thread> threads;
+    private ExecutorService threadManager;
 
-    public ShutdownHook(List<Thread> threads){
-        this.threads = threads;
+    public ShutdownHook(ExecutorService threadManager){
+        this.threadManager = threadManager;
     }
 
     public void run(){
-        for (Thread thread: threads) {
-            thread.interrupt();
-        }
+        threadManager.shutdownNow();
     }
 
 

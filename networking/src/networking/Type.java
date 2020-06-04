@@ -3,12 +3,15 @@ package networking;
 import java.util.HashMap;
 import java.util.Map;
 
+// MAYBE MOVE THIS TO PACKET CLASS
+
 public enum Type {
     MESSAGE(0),
     ACK(1),
     END_SESSION(2),
-    ACCEPT_USER(3),
-    REQUEST_USER(4);
+    RELAY_SHUTDOWN(3),
+    ACCEPT_USER(4),
+    REQUEST_USER(5);
 
     private final int code;
     private static Map<Integer,Type> map = new HashMap<>();

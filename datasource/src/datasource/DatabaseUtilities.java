@@ -43,6 +43,7 @@ public class DatabaseUtilities {
     private static final String DELETE_CONTACT = "DELETE FROM contacts WHERE cid = ?";
     private static final String INSERT_NETWORKCONTACTS_CID = "INSERT INTO networkContacts(nid, cid) VALUES (?,?)";
     private static final String DELETE_NETWORKCONTACTS_CID = "DELETE FROM networkContacts WHERE nid = ? AND cid = ?";
+//    private static final String SEED_REGISTRATION_RECORD =  "INSERT INTO networks("
 
 
 
@@ -178,9 +179,6 @@ public class DatabaseUtilities {
             }
             if(queryDeleteNetworks != null){
                 queryDeleteNetworks.close();
-            }
-            if(queryDeleteNetworkContactsNid != null){
-                queryDeleteNetworkContactsNid.close();
             }
             if(queryDeleteNetworkContactsNid != null){
                 queryDeleteNetworkContactsNid.close();

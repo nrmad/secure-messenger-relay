@@ -78,7 +78,6 @@ public class SecurityUtilities {
     /**
      * A workaround for not being able to select the certificate entry for the TrustManager
      * @param truststore the saved truststore with all the trusted certificat entries for each network
-     * @param storePassword the password
      * @param fingerprint the cert fingerprint
      * @return the singleton keystore
      * @throws GeneralSecurityException

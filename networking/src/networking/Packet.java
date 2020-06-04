@@ -65,4 +65,8 @@ public class Packet implements Externalizable {
         data = in.readUTF();
 
     }
+
+    public static Packet getShutdownPacket(String destination, String source){
+        return new Packet(destination, source, Type.RELAY_SHUTDOWN, "", "");
+    }
 }

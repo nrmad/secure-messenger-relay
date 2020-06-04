@@ -10,16 +10,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static java.lang.Thread.interrupted;
+
 public class RequestThread implements Runnable {
 
     private final int port;
     private final HashMap<Integer,ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>> networkMap;
-    private NetworkConfiguration networkConfiguration;
 
     public RequestThread(int port,  HashMap<Integer,ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>> networkMap){
         this.port = port;
         this.networkMap = networkMap;
-        networkConfiguration = NetworkConfiguration.getNetworkConfiguration();
     }
 
     public void run(){
@@ -29,7 +29,7 @@ public class RequestThread implements Runnable {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
 
-            while (networkConfiguration.getNetworkUp()) {
+            while (!interrupted()) {
                 try {
                     Socket socket = serverSocket.accept();
                     registerRequestThreads.submit(new RegisterRequestThread(socket, networkMap));

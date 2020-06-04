@@ -32,11 +32,15 @@ public class ClientThread implements Runnable {
              Thread reciever = new Thread(new RecieverClientThread(sslSocket, channelMap, channel, cid));
              Thread sender = new Thread(new SenderClientThread(sslSocket, channelMap, channel , cid));
 
-             try {
-                 sender.join();
-             } catch (InterruptedException e){
-                 reciever.interrupt();
-                 sender.interrupt();
+             if(!channelMap.get(cid).isPresent()) {
+              reciever.start();
+              sender.start();
+                 try {
+                     sender.join();
+                 } catch (InterruptedException e) {
+                     reciever.interrupt();
+                     sender.interrupt();
+                 }
              }
 
         } catch (GeneralSecurityException | IOException e) {

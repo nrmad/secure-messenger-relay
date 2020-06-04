@@ -8,8 +8,6 @@ import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.lang.Thread.interrupted;
-
 public class RecieverClientThread implements Runnable{
 
     private final SSLSocket sslSocket;
@@ -31,7 +29,7 @@ public class RecieverClientThread implements Runnable{
         Optional<BlockingQueue<Packet>> destChannel;
 
         try (ObjectInputStream input = new ObjectInputStream( new BufferedInputStream(sslSocket.getInputStream()))) {
-            while (!interrupted() && !quit) {
+            while (!quit) {
                 try {
                     Packet packet = (Packet) input.readObject();
                     if(!packet.getSource().equals(cid))
@@ -48,9 +46,9 @@ public class RecieverClientThread implements Runnable{
                             break;
 
                     }
-                }catch (ClassNotFoundException | InterruptedException e){}
+                }catch (ClassNotFoundException e){}
             }
-        }catch (IOException e){}
+        }catch (IOException | InterruptedException e){}
 //        finally {
 //            countDownLatch.countDown();
 //        }
