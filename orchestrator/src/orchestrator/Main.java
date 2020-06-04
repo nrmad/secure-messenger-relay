@@ -204,7 +204,7 @@ public class Main {
 
         } catch (SQLException | GeneralSecurityException | IOException | OperatorCreationException e) {
             // WILL HANDLE FAILED DELETE
-            System.out.println("shiz");
+            System.out.println("stuff");
         }
 
     }
