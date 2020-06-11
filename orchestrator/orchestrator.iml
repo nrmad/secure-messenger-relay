@@ -19,7 +19,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="bcpkix-jdk15on-165" level="project" />
     <orderEntry type="module" module-name="networking" />
   </component>
 </module>

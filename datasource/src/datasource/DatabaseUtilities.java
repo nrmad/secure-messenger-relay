@@ -2,7 +2,6 @@ package datasource;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -28,14 +27,8 @@ public class DatabaseUtilities {
     private static final String CREATE_CHATROOM_CONTACTS = "CREATE TABLE IF NOT EXISTS chatroomContacts( rid INTEGER, cid CHAR(88), PRIMARY KEY(rid,cid), " +
             "FOREIGN KEY(rid) REFERENCES chatrooms(rid), FOREIGN KEY(cid) REFERENCES contacts(cid))";
 
-    private static final String UPDATE_NETWORK_PORTS = "UPDATE networks SET port = ? WHERE nid = ?";
-    private static final String UPDATE_NETWORK_ALIASES = "UPDATE networks SET network_alias = ? WHERE nid = ?";
-    private static final String UPDATE_NETWORKS = "UPDATE networks SET port = ?, network_alias = ? WHERE nid = ?";
     // ??? MAYBE ALSO PRINT OUT FINGERPRINT
     private static final String SELECT_ALL_NETWORKS = "SELECT * FROM networks";
-    private static final String INSERT_NETWORKS = "INSERT INTO networks(nid, fingerprint, port, network_alias) VALUES(?,?,?,?)";
-    private static final String SELECT_NETWORKS = "SELECT fingerprint, port, network_alias FROM networks WHERE nid = ?";
-    private static final String DELETE_NETWORKS = "DELETE FROM networks WHERE nid = ?";
     private static final String DELETE_NETWORKCONTACTS_NID = "DELETE FROM networkContacts WHERE nid = ?";
     private static final String DELETE_CONTACTS = "DELETE FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks n ON n.nid = nc.nid WHERE n.nid = ?";
     private static final String SELECT_CONTACTS = "SELECT * FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks n ON n.nid = nc.nid WHERE n.nid = ?";
@@ -43,19 +36,10 @@ public class DatabaseUtilities {
     private static final String DELETE_CONTACT = "DELETE FROM contacts WHERE cid = ?";
     private static final String INSERT_NETWORKCONTACTS_CID = "INSERT INTO networkContacts(nid, cid) VALUES (?,?)";
     private static final String DELETE_NETWORKCONTACTS_CID = "DELETE FROM networkContacts WHERE nid = ? AND cid = ?";
-//    private static final String SEED_REGISTRATION_RECORD =  "INSERT INTO networks("
-
-
 
     private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
 
-    private PreparedStatement queryUpdateNetworkPorts;
-    private PreparedStatement queryUpdateNetworkAliases;
-    private PreparedStatement queryUpdateNetworks;
     private PreparedStatement querySelectAllNetworks;
-    private PreparedStatement queryInsertNetworks;
-    private PreparedStatement querySelectNetworks;
-    private PreparedStatement queryDeleteNetworks;
     private PreparedStatement queryDeleteNetworkContactsNid;
     private PreparedStatement queryDeleteContacts;
     private PreparedStatement querySelectContacts;
@@ -100,13 +84,7 @@ public class DatabaseUtilities {
      */
     private void setupPreparedStatements() throws SQLException {
 
-        queryUpdateNetworkPorts = conn.prepareStatement(UPDATE_NETWORK_PORTS);
-        queryUpdateNetworkAliases = conn.prepareStatement(UPDATE_NETWORK_ALIASES);
-        queryUpdateNetworks = conn.prepareStatement(UPDATE_NETWORKS);
         querySelectAllNetworks = conn.prepareStatement(SELECT_ALL_NETWORKS);
-        queryInsertNetworks = conn.prepareStatement(INSERT_NETWORKS);
-        querySelectNetworks = conn.prepareStatement(SELECT_NETWORKS);
-        queryDeleteNetworks = conn.prepareStatement(DELETE_NETWORKS);
         queryDeleteNetworkContactsNid = conn.prepareStatement(DELETE_NETWORKCONTACTS_NID);
         queryDeleteContacts = conn.prepareStatement(DELETE_CONTACTS);
         querySelectContacts = conn.prepareStatement(SELECT_CONTACTS);
@@ -159,26 +137,8 @@ public class DatabaseUtilities {
     public void closeConnection() {
 
         try {
-            if(queryUpdateNetworkPorts != null){
-                queryUpdateNetworkPorts.close();
-            }
-            if(queryUpdateNetworkAliases != null){
-                queryUpdateNetworkAliases.close();
-            }
-            if (queryUpdateNetworks != null) {
-                queryUpdateNetworks.close();
-            }
             if (querySelectAllNetworks != null) {
                 querySelectAllNetworks.close();
-            }
-            if (queryInsertNetworks != null) {
-                queryInsertNetworks.close();
-            }
-            if(querySelectNetworks != null){
-                querySelectNetworks.close();
-            }
-            if(queryDeleteNetworks != null){
-                queryDeleteNetworks.close();
             }
             if(queryDeleteNetworkContactsNid != null){
                 queryDeleteNetworkContactsNid.close();
@@ -208,120 +168,7 @@ public class DatabaseUtilities {
         }
     }
 
-    /**
-     * Update the specified network ports
-     * @param networks networks to update
-     * @return whether the method succeeded or not
-     */
-    public boolean updateNetworkPorts(List<Network> networks){
-        try {
-            try {
-                conn.setAutoCommit(false);
-                queryUpdateNetworkPorts.clearBatch();
 
-                for (Network network : networks) {
-                    if (network.getPort() >= 1024 && network.getPort() <= 65535) {
-
-                        queryUpdateNetworkPorts.setInt(1, network.getPort());
-                        queryUpdateNetworkPorts.setInt(2, network.getNid());
-                        queryUpdateNetworkPorts.addBatch();
-
-                    } else {
-                        throw new SQLException("Format incorrect");
-                    }
-                }
-
-                if (Arrays.stream(queryUpdateNetworkPorts.executeBatch()).anyMatch(x -> x == 0))
-                    throw new SQLException("update failed");
-                conn.commit();
-                return true;
-
-            } catch (SQLException e) {
-                conn.rollback();
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-        }
-
-        return false;
-    }
-
-    /**
-     * Update the specified network aliases
-     * @param networks the networks to update
-     * @return whether the method succeeded or not
-     */
-    public boolean updateNetworkAliases(List<Network> networks){
-        try {
-            try {
-                conn.setAutoCommit(false);
-                queryUpdateNetworkAliases.clearBatch();
-
-
-                for (Network network : networks) {
-                    if (aliasPattern.matcher(network.getNetwork_alias()).matches()) {
-
-                        queryUpdateNetworkAliases.setString(1, network.getNetwork_alias());
-                        queryUpdateNetworkAliases.setInt(2, network.getNid());
-                        queryUpdateNetworkAliases.addBatch();
-
-                    } else {
-                        throw new SQLException("Format incorrect");
-                    }
-                }
-
-                if (Arrays.stream(queryUpdateNetworkAliases.executeBatch()).anyMatch(x -> x == 0))
-                    throw new SQLException("update failed");
-                conn.commit();
-                return true;
-
-            } catch (SQLException e) {
-                conn.rollback();
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-        }
-        return false;
-    }
-
-
-    // MUST BE UPDATED TO ALLOW SELECTION OF JUST PORTS OR ALIASES
-    public boolean updateNetworks(List<Network> networks) {
-
-        try {
-            try {
-                conn.setAutoCommit(false);
-                queryUpdateNetworks.clearBatch();
-
-                for (Network network : networks) {
-                    if (network.getPort() >= 1024 && network.getPort() <= 65535 && aliasPattern.matcher(network.getNetwork_alias()).matches()) {
-
-                        queryUpdateNetworks.setInt(1, network.getPort());
-                        queryUpdateNetworks.setString(2, network.getNetwork_alias());
-                        queryUpdateNetworks.setInt(3, network.getNid());
-                        queryUpdateNetworks.addBatch();
-
-                    } else {
-                        throw new SQLException("Format incorrect");
-                    }
-                }
-
-                if (Arrays.stream(queryUpdateNetworks.executeBatch()).anyMatch(x -> x == 0))
-                    throw new SQLException("update failed");
-                conn.commit();
-                return true;
-
-            } catch (SQLException e) {
-                conn.rollback();
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-        }
-        return false;
-    }
 
     public List<Network> getAllNetworks() throws SQLException {
 
@@ -336,89 +183,6 @@ public class DatabaseUtilities {
         } else {
             throw new SQLException("no networks exist");
         }
-    }
-
-    public boolean addNetworks(List<Network> networks) {
-
-        try {
-            try {
-                conn.setAutoCommit(false);
-                queryInsertNetworks.clearBatch();
-
-                for (Network network : networks) {
-                    if (network.getPort() >= 1024 && network.getPort() <= 65535 && aliasPattern.matcher(network.getNetwork_alias()).matches()) {
-                        queryInsertNetworks.setInt(1, networkCounter++);
-                        queryInsertNetworks.setString(2, network.getFingerprint());
-                        queryInsertNetworks.setInt(3, network.getPort());
-                        queryInsertNetworks.setString(4, network.getNetwork_alias());
-                        queryInsertNetworks.addBatch();
-
-                    } else {
-                        throw new SQLException("Format incorrect");
-                    }
-                }
-                if(Arrays.stream(queryInsertNetworks.executeBatch()).anyMatch(x -> x == 0))
-                    throw new SQLException("Format incorrect");
-
-                conn.commit();
-                return true;
-
-            } catch (SQLException e) {
-                System.out.println("failed to add networks" + e.getMessage());
-                conn.rollback();
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        }catch (SQLException e){}
-        return false;
-    }
-
-    public List<Network> getNetworks(List<Network> networks) throws SQLException{
-
-        for(Network network : networks){
-            querySelectNetworks.clearParameters();
-            querySelectNetworks.setInt(1,network.getNid());
-            ResultSet resultSet = querySelectNetworks.executeQuery();
-            if(resultSet.next()){
-                network.setFingerprint(resultSet.getString(1));
-                network.setPort(resultSet.getInt(2));
-                network.setNetwork_alias(resultSet.getString(3));
-            } else {
-                // ??? WOULD AN EMPTY ARRAY NOT BE BETTER !!! DON'T THINK SO BECAUSE WE WANT DO DELETE ALL OR NONE
-                throw new SQLException();
-            }
-        }
-        return networks;
-    }
-
-
-    public boolean deleteNetworks(List<Network> networks){
-
-        try {
-            try {
-                conn.setAutoCommit(false);
-                queryDeleteNetworks.clearBatch();
-
-                deleteContacts(networks);
-                deleteNetworkContacts(networks);
-
-                for (Network network : networks) {
-                    queryDeleteNetworks.setInt(1, network.getNid());
-                    queryDeleteNetworks.addBatch();
-                }
-                if (Arrays.stream(queryDeleteNetworks.executeBatch()).anyMatch(x -> x == 0))
-                    throw new SQLException("update failed");
-                conn.commit();
-                return true;
-
-            } catch (SQLException e) {
-                conn.rollback();
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        } catch (SQLException e) {
-        }
-        return false;
     }
 
     /**
