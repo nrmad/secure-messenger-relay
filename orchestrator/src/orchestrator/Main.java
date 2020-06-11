@@ -73,7 +73,7 @@ public class Main {
 
                 Runtime.getRuntime().addShutdownHook(new ShutdownHook(threadManager));
 
-//            databaseUtilities.closeConnection();
+            databaseUtilities.closeConnection();
 
         } catch (SQLException | GeneralSecurityException | IOException e) {
             // WILL HANDLE FAILED DELETE

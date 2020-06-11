@@ -2,6 +2,7 @@ package datasource;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -29,8 +30,6 @@ public class DatabaseUtilities {
 
     // ??? MAYBE ALSO PRINT OUT FINGERPRINT
     private static final String SELECT_ALL_NETWORKS = "SELECT * FROM networks";
-    private static final String DELETE_NETWORKCONTACTS_NID = "DELETE FROM networkContacts WHERE nid = ?";
-    private static final String DELETE_CONTACTS = "DELETE FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks n ON n.nid = nc.nid WHERE n.nid = ?";
     private static final String SELECT_CONTACTS = "SELECT * FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid INNER JOIN networks n ON n.nid = nc.nid WHERE n.nid = ?";
     private static final String INSERT_CONTACT = "INSERT INTO contacts(cid, alias) VALUES(?,?)";
     private static final String DELETE_CONTACT = "DELETE FROM contacts WHERE cid = ?";
@@ -40,8 +39,6 @@ public class DatabaseUtilities {
     private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
 
     private PreparedStatement querySelectAllNetworks;
-    private PreparedStatement queryDeleteNetworkContactsNid;
-    private PreparedStatement queryDeleteContacts;
     private PreparedStatement querySelectContacts;
     private PreparedStatement queryInsertContact;
     private PreparedStatement queryDeleteContact;
@@ -85,8 +82,6 @@ public class DatabaseUtilities {
     private void setupPreparedStatements() throws SQLException {
 
         querySelectAllNetworks = conn.prepareStatement(SELECT_ALL_NETWORKS);
-        queryDeleteNetworkContactsNid = conn.prepareStatement(DELETE_NETWORKCONTACTS_NID);
-        queryDeleteContacts = conn.prepareStatement(DELETE_CONTACTS);
         querySelectContacts = conn.prepareStatement(SELECT_CONTACTS);
         queryInsertContact = conn.prepareStatement(INSERT_CONTACT);
         queryDeleteContact = conn.prepareStatement(DELETE_CONTACT);
@@ -140,9 +135,6 @@ public class DatabaseUtilities {
             if (querySelectAllNetworks != null) {
                 querySelectAllNetworks.close();
             }
-            if(queryDeleteNetworkContactsNid != null){
-                queryDeleteNetworkContactsNid.close();
-            }
             if(querySelectContacts != null){
                 querySelectContacts.close();
             }
@@ -185,31 +177,6 @@ public class DatabaseUtilities {
         }
     }
 
-    /**
-     * A private helper to deleteNetworks this method deletes network contacts
-     * @param networks the networks to delete contacts for
-     * @throws SQLException
-     */
-    private void deleteNetworkContacts(List<Network> networks) throws SQLException{
-
-        queryDeleteNetworkContactsNid.clearBatch();
-        for(Network network: networks){
-            queryDeleteNetworkContactsNid.setInt(1,network.getNid());
-            queryDeleteNetworkContactsNid.addBatch();
-        }
-
-        queryDeleteNetworkContactsNid.executeBatch();
-    }
-
-    private void deleteContacts(List<Network> networks) throws SQLException{
-
-        queryDeleteContacts.clearBatch();
-        for(Network network: networks){
-            queryDeleteContacts.setInt(1, network.getNid());
-            queryDeleteContacts.addBatch();
-        }
-        queryDeleteContacts.executeBatch();
-    }
 
     /**
      * gets all the contacts for the specified network
@@ -296,9 +263,6 @@ public class DatabaseUtilities {
         queryInsertNetworkContactsCid.setString(2, contact.getCid());
         if (queryInsertNetworkContactsCid.executeUpdate()== 0)
             throw new SQLException();
-
-
-
     }
 
     /**
@@ -314,7 +278,7 @@ public class DatabaseUtilities {
             throw new SQLException();
     }
 
-    // A TEMPORARY METHOD FOR TESTING PURPOSES
+    //  ------------------------- TEMPORARY METHODs FOR TESTING PURPOSES ----------------------------------------------
     public boolean tempMethod() {
 
         try {
@@ -331,5 +295,65 @@ public class DatabaseUtilities {
             return false;
         }
     }
+
+    public boolean addNetworks(List<Network> networks) {
+
+
+        try {
+            try {
+                PreparedStatement queryInsertNetworks = conn.prepareStatement("INSERT INTO networks(nid, fingerprint, port," +
+                        " network_alias) VALUES(?,?,?,?)");
+
+                conn.setAutoCommit(false);
+                queryInsertNetworks.clearBatch();
+
+                for (Network network : networks) {
+                    if (network.getPort() >= 1024 && network.getPort() <= 65535 && aliasPattern.matcher(network.getNetwork_alias()).matches()) {
+                        queryInsertNetworks.setInt(1, networkCounter++);
+                        queryInsertNetworks.setString(2, network.getFingerprint());
+                        queryInsertNetworks.setInt(3, network.getPort());
+                        queryInsertNetworks.setString(4, network.getNetwork_alias());
+                        queryInsertNetworks.addBatch();
+
+                    } else {
+                        throw new SQLException("Format incorrect");
+                    }
+                }
+                if(Arrays.stream(queryInsertNetworks.executeBatch()).anyMatch(x -> x == 0))
+                    throw new SQLException("Format incorrect");
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                System.out.println("failed to add networks" + e.getMessage());
+                conn.rollback();
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }catch (SQLException e){}
+        return false;
+    }
+
+    public List<Network> getNetworks(List<Network> networks) throws SQLException{
+
+         PreparedStatement querySelectNetworks = conn.prepareStatement("SELECT fingerprint, port, network_alias FROM " +
+                 "networks WHERE nid = ?");
+
+        for(Network network : networks){
+            querySelectNetworks.clearParameters();
+            querySelectNetworks.setInt(1,network.getNid());
+            ResultSet resultSet = querySelectNetworks.executeQuery();
+            if(resultSet.next()){
+                network.setFingerprint(resultSet.getString(1));
+                network.setPort(resultSet.getInt(2));
+                network.setNetwork_alias(resultSet.getString(3));
+            } else {
+                throw new SQLException();
+            }
+        }
+        return networks;
+    }
+
 
 }

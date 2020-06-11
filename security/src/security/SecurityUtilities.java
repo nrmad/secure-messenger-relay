@@ -50,7 +50,7 @@ public class SecurityUtilities {
     public static KeyStore.PrivateKeyEntry loadKeyEntry(String storePassword, String fingerprint)
             throws GeneralSecurityException, IOException
     {
-        KeyStore keystore = loadKeystore(storePassword);
+         KeyStore keystore = loadKeystore(storePassword);
         KeyStore.ProtectionParameter keyPassword = new KeyStore.PasswordProtection(storePassword.toCharArray());
         return (KeyStore.PrivateKeyEntry) keystore.getEntry(fingerprint, keyPassword);
     }
