@@ -21,8 +21,7 @@ import java.util.concurrent.Executors;
 public class Main {
 
     public static void main(String[] args) {
-        boolean success = false;
-        List<Network> networks = new ArrayList<>();
+        List<Network> networks;
         DatabaseUtilities databaseUtilities;
 
         try{
@@ -57,6 +56,7 @@ public class Main {
 
                     // SAVE THE CHANNELMAP TO NETWORK MAP WITH ITS NID
 
+                    // ??? if channelMap is assumed by reference would a list of its values be the same
                     networkMap.put(network.getNid(), channelMap);
 
                     // START NEW NETWORKTHREAD ??? NEED TO KNOW ABOUT LINUX SERVICES SHOULD THIS OBJECT BE RETAINED

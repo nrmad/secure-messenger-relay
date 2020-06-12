@@ -2,16 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6359fa30-0bd1-4051-86c6-4df76536ea28" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/mysql_connector_java_5_1_38.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/mysql_connector_java_5_1_38.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/datasource/src/datasource/Account.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/datasource.iml" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/datasource.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/Contact.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/Contact.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/Contact.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/Contact.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/datasource/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/module-info.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -22,14 +22,17 @@
   <component name="CodeInsightWorkspaceSettings">
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
+  <component name="FavoritesManager">
+    <favorites_list name="secure-messenger-relay" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JUnit4 Test Class" />
         <option value="module-info" />
         <option value="Enum" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -81,7 +84,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.DatabaseUtilitiesTest">
+  <component name="RunManager" selected="JUnit.DatabaseUtilitiesTest.deleteUser">
     <configuration name="DatabaseUtilitiesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="datasource" />
       <extension name="coverage">
@@ -113,6 +116,22 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="DatabaseUtilitiesTest.addUser" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="datasource" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="datasource.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="datasource" />
+      <option name="MAIN_CLASS_NAME" value="datasource.DatabaseUtilitiesTest" />
+      <option name="METHOD_NAME" value="addUser" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="DatabaseUtilitiesTest.deleteContact" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="datasource" />
       <extension name="coverage">
@@ -129,7 +148,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="DatabaseUtilitiesTest.getNetworkContacts" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="DatabaseUtilitiesTest.deleteUser" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="datasource" />
       <extension name="coverage">
         <pattern>
@@ -139,42 +158,26 @@
       </extension>
       <option name="PACKAGE_NAME" value="datasource" />
       <option name="MAIN_CLASS_NAME" value="datasource.DatabaseUtilitiesTest" />
-      <option name="METHOD_NAME" value="getNetworkContacts" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MainTest.mainDelete" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="orchestrator" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="orchestrator.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="orchestrator" />
-      <option name="MAIN_CLASS_NAME" value="orchestrator.MainTest" />
-      <option name="METHOD_NAME" value="mainDelete" />
+      <option name="METHOD_NAME" value="deleteUser" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="JUnit.MainTest.mainDelete" />
       <item itemvalue="JUnit.DatabaseUtilitiesTest" />
-      <item itemvalue="JUnit.DatabaseUtilitiesTest.getNetworkContacts" />
       <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteContact" />
       <item itemvalue="JUnit.DatabaseUtilitiesTest.addContact" />
+      <item itemvalue="JUnit.DatabaseUtilitiesTest.addUser" />
+      <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteUser" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteUser" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest" />
-        <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteContact" />
+        <item itemvalue="JUnit.DatabaseUtilitiesTest.addUser" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest.addContact" />
-        <item itemvalue="JUnit.DatabaseUtilitiesTest.getNetworkContacts" />
-        <item itemvalue="JUnit.MainTest.mainDelete" />
+        <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteContact" />
       </list>
     </recent_temporary>
   </component>
@@ -215,12 +218,23 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java</url>
+          <line>271</line>
+          <option name="timeStamp" value="71" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java</url>
-          <line>143</line>
-          <option name="timeStamp" value="61" />
+          <line>173</line>
+          <option name="timeStamp" value="73" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="JUnit">
+        <watch expression="((BatchUpdateException)e).updateCounts" custom="java.sql.BatchUpdateException" />
+        <watch expression="((BatchUpdateException)e).updateCounts" language="JAVA" custom="java.sql.BatchUpdateException" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />

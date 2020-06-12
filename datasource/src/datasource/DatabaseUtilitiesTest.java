@@ -77,9 +77,12 @@ public class DatabaseUtilitiesTest {
         List<Network> networks = new ArrayList<>();
         List<Contact> contacts;
         networks.add(new Network(1, "1",2050, "tom"));
-        Contact contact1 = new Contact("shiz1", "tomboi");
-        Contact contact2 = new Contact("shiz2", "dickboi");
-        Contact contact3 = new Contact("shiz3", "harryboi");
+        Contact contact1 = new Contact(1, "tomboi");
+        Contact contact2 = new Contact(2, "dickboi");
+        Contact contact3 = new Contact(3, "harryboi");
+        Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
+        Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
+        Account account3 = new Account(3, "anon", "pass3", "salt3",12000);
 
         databaseUtilities.addNetworks(networks);
 
@@ -87,9 +90,9 @@ public class DatabaseUtilitiesTest {
             networks = databaseUtilities.getAllNetworks();
         }catch (SQLException e){}
 
-        databaseUtilities.addContact(contact1, networks.get(0));
-        databaseUtilities.addContact(contact2, networks.get(0));
-        databaseUtilities.addContact(contact3, networks.get(0));
+        databaseUtilities.addUser(contact1, networks.get(0), account1);
+        databaseUtilities.addUser(contact2, networks.get(0), account2);
+        databaseUtilities.addUser(contact3, networks.get(0), account3);
 
         try {
             contacts = databaseUtilities.getNetworkContacts(networks.get(0));
@@ -108,12 +111,15 @@ public class DatabaseUtilitiesTest {
     }
 
     @org.junit.Test
-    public void addContact(){
+    public void addUser(){
         List<Network> networks = new ArrayList<>();
         List<Contact> contacts = new ArrayList<>();
-        Contact contact1 = new Contact("shiz1", "tomboi");
-        Contact contact2 = new Contact("shiz2", "dickboi");
-        Contact contact3 = new Contact("shiz3", "harryboi");
+        Contact contact1 = new Contact(1, "tomboi");
+        Contact contact2 = new Contact(2, "dickboi");
+        Contact contact3 = new Contact(3, "harryboi");
+        Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
+        Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
+        Account account3 = new Account(3, "anon", "pass3", "salt3",12000);
         networks.add(new Network(1, "1",2050, "tom"));
         contacts.add(contact1);
         contacts.add(contact2);
@@ -124,14 +130,16 @@ public class DatabaseUtilitiesTest {
             networks = databaseUtilities.getNetworks(networks);
         }catch (SQLException e){}
 
-        databaseUtilities.addContact(contact1, networks.get(0));
-        databaseUtilities.addContact(contact2, networks.get(0));
-        databaseUtilities.addContact(contact3, networks.get(0));
+        databaseUtilities.addUser(contact1, networks.get(0), account1);
+        databaseUtilities.addUser(contact2, networks.get(0), account2);
+        databaseUtilities.addUser(contact3, networks.get(0), account3);
 
         try {
             assertEquals(contacts, databaseUtilities.getNetworkContacts(networks.get(0)));
 
-            assertFalse(databaseUtilities.addContact(new Contact("shiz4", "jimboi"), new Network(5,"drdontexist")));
+            assertFalse(databaseUtilities.addUser(new Contact(4, "jimboi"), new Network(5,"drdontexist"),
+                    new Account(1,"james", "pass", "salt",12000)));
+
         }catch (SQLException e) {
             fail();
         }
@@ -139,32 +147,35 @@ public class DatabaseUtilitiesTest {
     }
 
     @org.junit.Test
-    public void deleteContact(){
+    public void deleteUser(){
 
         List<Network> networks = new ArrayList<>();
-        List<Contact> contacts = new ArrayList<>();
-        Contact contact1 = new Contact("shiz1", "tomboi");
-        Contact contact2 = new Contact("shiz2", "dickboi");
-        Contact contact3 = new Contact("shiz3", "harryboi");
+//        List<Contact> contacts = new ArrayList<>();
+        Contact contact1 = new Contact(1, "tomboi");
+        Contact contact2 = new Contact(2, "dickboi");
+        Contact contact3 = new Contact(3, "harryboi");
+        Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
+        Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
+        Account account3 = new Account(3, "anon", "pass3", "salt3",12000);
         networks.add(new Network(1, "1",2050, "tom"));
-        contacts.add(contact1);
-        contacts.add(contact2);
-        contacts.add(contact3);
+//        contacts.add(contact1);
+//        contacts.add(contact2);
+//        contacts.add(contact3);
 
         databaseUtilities.addNetworks(networks);
         try{
             networks = databaseUtilities.getAllNetworks();
         }catch (SQLException e){}
 
-        databaseUtilities.addContact(contact1, networks.get(0));
-        databaseUtilities.addContact(contact2, networks.get(0));
-        databaseUtilities.addContact(contact3, networks.get(0));
+        databaseUtilities.addUser(contact1, networks.get(0), account1);
+        databaseUtilities.addUser(contact2, networks.get(0), account2);
+        databaseUtilities.addUser(contact3, networks.get(0), account3);
 
-       assertTrue(databaseUtilities.deleteContact(contact1, networks.get(0)));
-       assertTrue(databaseUtilities.deleteContact(contact2, networks.get(0)));
-       assertTrue(databaseUtilities.deleteContact(contact3, networks.get(0)));
-       assertFalse(databaseUtilities.deleteContact(new Contact("notACid", "notAnAlias"), networks.get(0)));
-        assertFalse(databaseUtilities.deleteContact(new Contact("notACid", "notAnAlias"), new Network(5, "notANetwork")));
+       assertTrue(databaseUtilities.deleteUser(contact1));
+       assertTrue(databaseUtilities.deleteUser(contact2));
+       assertTrue(databaseUtilities.deleteUser(contact3));
+       assertFalse(databaseUtilities.deleteUser(new Contact(66, "notAnAlias")));
+        assertFalse(databaseUtilities.deleteUser(new Contact(99, "notAnAlias")));
 
         try {
             assertTrue(databaseUtilities.getNetworkContacts(networks.get(0)).isEmpty());

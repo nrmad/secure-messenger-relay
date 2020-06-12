@@ -4,15 +4,19 @@ import java.util.Objects;
 
 public class Contact {
 
-private String cid;
+private int cid;
 private String alias;
 
-public Contact(String cid, String alias){
+public Contact(int cid, String alias){
     this.cid = cid;
     this.alias = alias;
 }
 
-    public String getCid() {
+    public void setCid(int cid) {
+        this.cid = cid;
+    }
+
+    public int getCid() {
         return cid;
     }
 
@@ -25,7 +29,7 @@ public Contact(String cid, String alias){
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return Objects.equals(cid, contact.cid) &&
+        return cid == contact.cid &&
                 Objects.equals(alias, contact.alias);
     }
 }
