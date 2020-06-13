@@ -47,8 +47,7 @@ public class DatabaseUtilities {
     private static final String INSERT_CONTACT = "INSERT INTO contacts(cid, alias) VALUES(?,?)";
     private static final String INSERT_ACCOUNT_CONTACT = "INSERT INTO accountContact(aid, cid) VALUES (?,?)";
     private static final String INSERT_NETWORKCONTACTS_CID = "INSERT INTO networkContacts(nid, cid) VALUES (?,?)";
-    private static final String DELETE_ACCOUNT = "DELETE FROM accounts a INNER JOIN accountContact ac a.aid = ac.aid " +
-            "INNER JOIN contacts c ON ac.cid = c.cid WHERE cid = ?";
+    private static final String DELETE_ACCOUNT = "DELETE FROM accounts WHERE aid = ?";
     private static final String DELETE_ACCOUNT_CONTACT = "DELETE FROM accountContact WHERE cid = ?";
     private static final String DELETE_CONTACT = "DELETE FROM contacts WHERE cid = ?";
     private static final String DELETE_NETWORKCONTACTS_CID = "DELETE FROM networkContacts WHERE cid = ?";
@@ -328,14 +327,14 @@ public class DatabaseUtilities {
      * @param contact the contact to be deleted
      * @return true for success and false for failure
      */
-    public boolean deleteUser(Contact contact){
+    public boolean deleteUser(Contact contact, Account account){
 
         try {
             try {
                 conn.setAutoCommit(false);
                 deleteNetworkContact(contact);
                 deleteAccountContact(contact);
-                deleteAccount(contact);
+                deleteAccount(account);
                 deleteContact(contact);
                 conn.commit();
                 return true;
@@ -359,8 +358,8 @@ public class DatabaseUtilities {
             throw new SQLException();
     }
 
-    private void deleteAccount(Contact contact) throws SQLException{
-        queryDeleteAccount.setInt(1, contact.getCid());
+    private void deleteAccount(Account account) throws SQLException{
+        queryDeleteAccount.setInt(1, account.getAid());
         if(queryDeleteAccount.executeUpdate() == 0)
             throw new SQLException();
     }

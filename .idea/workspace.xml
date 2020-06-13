@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6359fa30-0bd1-4051-86c6-4df76536ea28" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/datasource/src/datasource/Account.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/Contact.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/Contact.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/Contact.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/Contact.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -38,12 +31,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="59" />
-    <option name="y" value="-4" />
-    <option name="width" value="1861" />
-    <option name="height" value="1084" />
   </component>
   <component name="ProjectId" id="1dAwzLxqrNrtNsEaksjLqkwNFQE" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -84,7 +71,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.DatabaseUtilitiesTest.deleteUser">
+  <component name="RunManager" selected="JUnit.DatabaseUtilitiesTest">
     <configuration name="DatabaseUtilitiesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="datasource" />
       <extension name="coverage">
@@ -173,8 +160,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteUser" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest" />
+        <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteUser" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest.addUser" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest.addContact" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteContact" />
@@ -208,27 +195,15 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
     </option>
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java</url>
-          <line>271</line>
-          <option name="timeStamp" value="71" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java</url>
-          <line>173</line>
-          <option name="timeStamp" value="73" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <watches-manager>
       <configuration name="JUnit">
         <watch expression="((BatchUpdateException)e).updateCounts" custom="java.sql.BatchUpdateException" />

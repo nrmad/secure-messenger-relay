@@ -171,11 +171,11 @@ public class DatabaseUtilitiesTest {
         databaseUtilities.addUser(contact2, networks.get(0), account2);
         databaseUtilities.addUser(contact3, networks.get(0), account3);
 
-       assertTrue(databaseUtilities.deleteUser(contact1));
-       assertTrue(databaseUtilities.deleteUser(contact2));
-       assertTrue(databaseUtilities.deleteUser(contact3));
-       assertFalse(databaseUtilities.deleteUser(new Contact(66, "notAnAlias")));
-        assertFalse(databaseUtilities.deleteUser(new Contact(99, "notAnAlias")));
+       assertTrue(databaseUtilities.deleteUser(contact1, account1));
+       assertTrue(databaseUtilities.deleteUser(contact2, account2));
+       assertTrue(databaseUtilities.deleteUser(contact3, account3));
+       assertFalse(databaseUtilities.deleteUser(new Contact(66, "notAnAlias"), new Account(66,"james", "barnoby","salty",12000)));
+        assertFalse(databaseUtilities.deleteUser(new Contact(99, "notAnAlias"), new Account(99,"jack", "johnson","salty",12000)));
 
         try {
             assertTrue(databaseUtilities.getNetworkContacts(networks.get(0)).isEmpty());
