@@ -11,11 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SenderClientThread implements Runnable{
 
     private final SSLSocket sslSocket;
-    private final ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>   channelMap;
+    private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>   channelMap;
     private final BlockingQueue<Packet> channel;
-    private final String cid;
+    private final int cid;
 
-    public SenderClientThread(SSLSocket sslSocket, ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>  channelMap , BlockingQueue<Packet> channel, String cid) {
+    public SenderClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap , BlockingQueue<Packet> channel, int cid) {
         this.sslSocket = sslSocket;
         this.channelMap = channelMap;
         this.channel = channel;
@@ -39,7 +39,7 @@ public class SenderClientThread implements Runnable{
                             output.writeObject(packet);
                             break;
                         case END_SESSION:
-                            if(packet.getSource().equals(cid)) {
+                            if(packet.getSource() == cid) {
                                 output.writeObject(packet);
                                 quit = true;
                             }

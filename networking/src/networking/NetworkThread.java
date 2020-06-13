@@ -11,14 +11,14 @@ import static java.lang.Thread.interrupted;
 public class NetworkThread implements Runnable {
 
     private SecureSocketManager secureSocketManager;
-    private final String fingerprint;
+    private final int nid;
     private final int tlsPort;
-    private final ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>> channelMap;
+    private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>> channelMap;
 
 
-    public NetworkThread(SecureSocketManager secureSocketManager, String fingerprint,  ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>> channelMap, int tlsPort) {
+    public NetworkThread(SecureSocketManager secureSocketManager, int nid, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>> channelMap, int tlsPort) {
         this.secureSocketManager = secureSocketManager;
-        this.fingerprint = fingerprint;
+        this.nid = nid;
         this.tlsPort = tlsPort;
         this.channelMap = channelMap;
     }
@@ -50,7 +50,7 @@ public class NetworkThread implements Runnable {
            channelMap.entrySet()
                    .stream()
                    .filter(e -> e.getValue().isPresent())
-                   .forEach(ThrowingConsumer.unchecked(e -> e.getValue().get().put(Packet.getShutdownPacket(e.getKey(), fingerprint))));
+                   .forEach(ThrowingConsumer.unchecked(e -> e.getValue().get().put(Packet.getShutdownPacket(e.getKey(), nid))));
            if(!clientThreads.awaitTermination(3, TimeUnit.MINUTES))
                clientThreads.shutdownNow();
 

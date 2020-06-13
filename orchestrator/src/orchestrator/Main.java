@@ -39,7 +39,7 @@ public class Main {
 
                 // CHECK THE NETWORK LIST IS AT LEAST TWO IN LENGTH OR END
 
-                HashMap<Integer,ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>> networkMap = new HashMap<>();
+                HashMap<Integer,ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap = new HashMap<>();
                 ExecutorService threadManager = Executors.newFixedThreadPool(networks.size());
 
                 for (Network network: networks) {
@@ -47,7 +47,7 @@ public class Main {
                     KeyStore singleKeystore = SecurityUtilities.loadSingleKeystore(keystore, credentials[1], network.getFingerprint());
                     KeyStore singleTruststore = SecurityUtilities.loadSingleTruststore(truststore, network.getFingerprint());
                     SecureSocketManager secureSocketManager = new SecureSocketManager(singleKeystore, singleTruststore, credentials[1]);
-                    ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>> channelMap = new ConcurrentHashMap<>();
+                    ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>> channelMap = new ConcurrentHashMap<>();
 
                     // LOAD THE CHANNELMAP WITH EVERY CONTACT AND AN EMPTY OPTIONAL
 
@@ -61,7 +61,7 @@ public class Main {
 
                     // START NEW NETWORKTHREAD ??? NEED TO KNOW ABOUT LINUX SERVICES SHOULD THIS OBJECT BE RETAINED
 
-                    threadManager.execute(new NetworkThread(secureSocketManager, network.getFingerprint(), channelMap, network.getPort()));
+                    threadManager.execute(new NetworkThread(secureSocketManager, network.getNid(), channelMap, network.getPort()));
 
                 }
 

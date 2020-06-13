@@ -14,9 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientThread implements Runnable {
 
     private final SSLSocket sslSocket;
-    private final ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>  channelMap;
+    private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap;
 
-    public ClientThread(SSLSocket sslSocket, ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>  channelMap){
+    public ClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap){
     this.sslSocket = sslSocket;
     this.channelMap = channelMap;
     }
@@ -26,9 +26,13 @@ public class ClientThread implements Runnable {
             // ??? MAYBE HAVE THE QUEUE CONFIGURABLE
             BlockingQueue<Packet> channel = new ArrayBlockingQueue<>(100);
             // ??? DOES THIS CALCULATE THE CORRECT CID
-            Certificate[] serverCerts = sslSocket.getSession().getPeerCertificates();
-            String cid = SecurityUtilities.calculateFingerprint(serverCerts[0].getEncoded());
+//            Certificate[] serverCerts = sslSocket.getSession().getPeerCertificates();
+//            String cid = SecurityUtilities.calculateFingerprint(serverCerts[0].getEncoded());
+            // --------------------------- NEW AUTHENTICATION --------------------------------
 
+
+
+            // -------------------------------------------------------------------------------
              Thread reciever = new Thread(new RecieverClientThread(sslSocket, channelMap, channel, cid));
              Thread sender = new Thread(new SenderClientThread(sslSocket, channelMap, channel , cid));
 
