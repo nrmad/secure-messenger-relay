@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6359fa30-0bd1-4051-86c6-4df76536ea28" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/datasource/src/datasource/ReadPropertiesFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -204,6 +207,15 @@
     </option>
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java</url>
+          <line>22</line>
+          <option name="timeStamp" value="75" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="JUnit">
         <watch expression="((BatchUpdateException)e).updateCounts" custom="java.sql.BatchUpdateException" />

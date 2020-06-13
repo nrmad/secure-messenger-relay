@@ -1,5 +1,6 @@
 package datasource;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.regex.Pattern;
 public class DatabaseUtilities {
 
     private static DatabaseUtilities databaseUtilities;
+    private static ReadPropertiesFile propertiesFile;
     private Connection conn;
 
     private Pattern aliasPattern = Pattern.compile("\\w{1,255}");
@@ -18,6 +20,9 @@ public class DatabaseUtilities {
 
     private static final String CREATE_DB = "CREATE DATABASE IF NOT EXISTS " + DB_NAME;
     private static final String USE_DB = "USE " + DB_NAME;
+
+    private static final String GET_LOCK = "SELECT GET_LOCK(?, 0)";
+    private static final String RELEASE_LOCK = "SELECT RELEASE_LOCK(?)";
 
     private static final String CREATE_ACCOUNT_CONTACT = "CREATE TABLE IF NOT EXISTS accountContact(aid INTEGER, " +
             "cid INTEGER, PRIMARY KEY(aid,cid), FOREIGN KEY(aid) REFERENCES accounts(aid), " +
@@ -66,6 +71,8 @@ public class DatabaseUtilities {
     private PreparedStatement queryDeleteNetworkContactsCid;
     private PreparedStatement queryDeleteAccount;
     private PreparedStatement queryDeleteAccountContact;
+    private static PreparedStatement queryGetLock;
+    private static PreparedStatement queryReleaseLock;
 
     private PreparedStatement queryRetrieveMaxNid;
     private PreparedStatement queryRetrieveMaxCid;
@@ -78,15 +85,17 @@ public class DatabaseUtilities {
     private DatabaseUtilities(String username, String password) throws SQLException {
         openConnection(username, password);
         setupPreparedStatements();
-        // !!! ADD LOCK
+        getLock();
         setupCounters();
     }
 
 
     // NOT SURE WHETHER TO HANDLE EXCEPTION HERE OR NOT
-    public static void setDatabaseUtilities(String username, String password) throws SQLException {
-        if (databaseUtilities == null)
+    public static void setDatabaseUtilities(String username, String password) throws SQLException, IOException {
+        if (databaseUtilities == null) {
+            propertiesFile = ReadPropertiesFile.getInstance();
             databaseUtilities = new DatabaseUtilities(username, password);
+        }
     }
 
     public static DatabaseUtilities getInstance() {
@@ -117,6 +126,8 @@ public class DatabaseUtilities {
         queryDeleteNetworkContactsCid = conn.prepareStatement(DELETE_NETWORKCONTACTS_CID);
         queryDeleteAccount = conn.prepareStatement(DELETE_ACCOUNT);
         queryDeleteAccountContact = conn.prepareStatement(DELETE_ACCOUNT_CONTACT);
+        queryGetLock = conn.prepareStatement(GET_LOCK);
+        queryReleaseLock = conn.prepareStatement(RELEASE_LOCK);
 
         queryRetrieveMaxNid = conn.prepareStatement(RETRIEVE_MAX_NID);
         queryRetrieveMaxCid = conn.prepareStatement(RETRIEVE_MAX_CID);
@@ -139,6 +150,24 @@ public class DatabaseUtilities {
             if(result.next())
                 accountCounter = result.getInt(1) +1;
     }
+
+    private void getLock() throws SQLException{
+
+        queryGetLock.clearParameters();
+        queryGetLock.setString(1, propertiesFile.getDb_lock());
+        ResultSet resultSet = queryGetLock.executeQuery();
+        resultSet.next();
+        if(resultSet.getInt(1) == 0)
+            throw  new SQLException();
+    }
+
+    private void releaseLock() throws SQLException{
+
+        queryReleaseLock.clearParameters();
+        queryReleaseLock.setString(1, propertiesFile.getDb_lock());
+        queryReleaseLock.execute();
+    }
+
 
     /**
      * sets up tables which do not already exist
@@ -168,6 +197,8 @@ public class DatabaseUtilities {
     public void closeConnection() {
 
         try {
+            releaseLock();
+
             if (querySelectAllNetworks != null) {
                 querySelectAllNetworks.close();
             }
@@ -197,6 +228,12 @@ public class DatabaseUtilities {
             }
             if(queryDeleteAccountContact != null){
                 queryDeleteAccountContact.close();
+            }
+            if(queryGetLock != null){
+                queryGetLock.close();
+            }
+            if(queryReleaseLock != null){
+                queryReleaseLock.close();
             }
             if(queryRetrieveMaxNid != null){
                 queryRetrieveMaxNid.close();

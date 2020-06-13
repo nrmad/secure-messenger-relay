@@ -4,6 +4,7 @@ package datasource;
 import org.junit.After;
 import org.junit.BeforeClass;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class DatabaseUtilitiesTest {
             DatabaseUtilities.setDatabaseUtilities( "relay-app", "relaypass");
             databaseUtilities = DatabaseUtilities.getInstance();
 
-        }catch(SQLException e){
+        }catch(SQLException | IOException e){
             System.out.println(e.getMessage());
         }
     }
