@@ -15,10 +15,12 @@ public class ClientThread implements Runnable {
 
     private final SSLSocket sslSocket;
     private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap;
+    private final int nid;
 
-    public ClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap){
+    public ClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap, int nid){
     this.sslSocket = sslSocket;
     this.channelMap = channelMap;
+    this.nid = nid;
     }
 
     public void run() {
@@ -28,13 +30,9 @@ public class ClientThread implements Runnable {
             // ??? DOES THIS CALCULATE THE CORRECT CID
 //            Certificate[] serverCerts = sslSocket.getSession().getPeerCertificates();
 //            String cid = SecurityUtilities.calculateFingerprint(serverCerts[0].getEncoded());
-            // --------------------------- NEW AUTHENTICATION --------------------------------
 
-
-
-            // -------------------------------------------------------------------------------
-             Thread reciever = new Thread(new RecieverClientThread(sslSocket, channelMap, channel, cid));
-             Thread sender = new Thread(new SenderClientThread(sslSocket, channelMap, channel , cid));
+             Thread reciever = new Thread(new RecieverClientThread(sslSocket, channelMap, channel, nid));
+             Thread sender = new Thread(new SenderClientThread(sslSocket, channelMap, channel));
 
              if(!channelMap.get(cid).isPresent()) {
               reciever.start();

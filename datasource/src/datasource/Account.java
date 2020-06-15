@@ -1,5 +1,7 @@
 package datasource;
 
+import java.util.Objects;
+
 public class Account {
 
     private int aid;
@@ -23,6 +25,17 @@ public class Account {
         this.iterations = iterations;
     }
 
+    /**
+     * Account constructor containing just the username
+     * @param username the username used to access the account record
+     */
+    public Account(String username){
+        this.aid = -1;
+        this.username = username;
+        this.password = "";
+        this.salt = "";
+        this.iterations = -1;
+    }
     public void setAid(int aid) {
         this.aid = aid;
     }
@@ -45,6 +58,18 @@ public class Account {
 
     public int getIterations() {
         return iterations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return aid == account.aid &&
+                Objects.equals(username, account.username) &&
+                Objects.equals(password, account.password) &&
+                Objects.equals(salt, account.salt) &&
+                iterations == account.iterations;
     }
 }
 

@@ -13,13 +13,12 @@ public class SenderClientThread implements Runnable{
     private final SSLSocket sslSocket;
     private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>   channelMap;
     private final BlockingQueue<Packet> channel;
-    private final int cid;
 
-    public SenderClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap , BlockingQueue<Packet> channel, int cid) {
+
+    public SenderClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap , BlockingQueue<Packet> channel) {
         this.sslSocket = sslSocket;
         this.channelMap = channelMap;
         this.channel = channel;
-        this.cid = cid;
     }
 
     public void run(){
@@ -28,8 +27,8 @@ public class SenderClientThread implements Runnable{
         channelMap.replace(cid, Optional.of(channel));
 
         try (ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(sslSocket.getOutputStream()))) {
+            // RECEIVE CID OR FAIL FROM RECEIVER AND UPDATE CHANNELMAP
             while (!quit) {
-
                     Packet packet = channel.take();
                     switch(packet.getType()){
                         case ACK:

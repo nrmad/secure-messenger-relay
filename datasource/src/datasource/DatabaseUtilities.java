@@ -3,17 +3,13 @@ package datasource;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class DatabaseUtilities {
 
     private static DatabaseUtilities databaseUtilities;
     private static ReadPropertiesFile propertiesFile;
     private Connection conn;
-
-    private Pattern aliasPattern = Pattern.compile("\\w{1,255}");
 
     private static final String DB_NAME = "secure_messenger_relay";
     private static final String CONNECTION_STRING = "jdbc:mysql://localhost:3306/?useSSL=false";
@@ -56,6 +52,16 @@ public class DatabaseUtilities {
     private static final String DELETE_ACCOUNT_CONTACT = "DELETE FROM accountContact WHERE cid = ?";
     private static final String DELETE_CONTACT = "DELETE FROM contacts WHERE cid = ?";
     private static final String DELETE_NETWORKCONTACTS_CID = "DELETE FROM networkContacts WHERE cid = ?";
+    private static final String SELECT_ACCOUNT = "SELECT * FROM accounts a INNER JOIN accountContact ac ON a.aid = ac.aid " +
+            "INNER JOIN contacts c ON ac.cid = c.cid INNER JOIN networkContacts nc ON c.cid = nc.cid WHERE username = ? " +
+            "AND nid = ?";
+    private static final String SELECT_CONTACT = "SELECT cid FROM contacts c INNER JOIN accountContact ac ON c.cid = ac.cid " +
+            "INNER JOIN accounts a ON ac.aid = a.aid WHERE aid = ?";
+    private static final String UPDATE_ACCOUNT_CREDENTIALS = "UPDATE accounts SET password = ?, salt = ?, iterations = ?" +
+            " WHERE aid = ?";
+    // ALSO UPDATE PASSWORD AND ENFORCE TWO RECORDS
+    private static final String CHECK_READY = " SELECT IF(EXISTS(SELECT * FROM networks WHERE nid = ? AND network_alias " +
+            "= ? AND (SELECT COUNT(nid) FROM networks) > 1), 1, 0)";
 
     private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
     private static final String RETRIEVE_MAX_CID = "SELECT COALESCE(MAX(cid), 0) FROM contacts";
@@ -71,8 +77,12 @@ public class DatabaseUtilities {
     private PreparedStatement queryDeleteNetworkContactsCid;
     private PreparedStatement queryDeleteAccount;
     private PreparedStatement queryDeleteAccountContact;
+    private PreparedStatement querySelectAccount;
+    private PreparedStatement querySelectContact;
+    private PreparedStatement queryUpdateAccountCredentials;
     private static PreparedStatement queryGetLock;
     private static PreparedStatement queryReleaseLock;
+    private static PreparedStatement queryCheckReady;
 
     private PreparedStatement queryRetrieveMaxNid;
     private PreparedStatement queryRetrieveMaxCid;
@@ -87,6 +97,7 @@ public class DatabaseUtilities {
         setupPreparedStatements();
         getLock();
         setupCounters();
+        checkReady();
     }
 
 
@@ -98,8 +109,11 @@ public class DatabaseUtilities {
         }
     }
 
-    public static DatabaseUtilities getInstance() {
-        return databaseUtilities;
+    public static DatabaseUtilities getInstance() throws SQLException{
+        if(databaseUtilities != null)
+            return databaseUtilities;
+        else
+            throw new SQLException();
     }
 
     private void openConnection(String username, String password) throws SQLException {
@@ -126,8 +140,12 @@ public class DatabaseUtilities {
         queryDeleteNetworkContactsCid = conn.prepareStatement(DELETE_NETWORKCONTACTS_CID);
         queryDeleteAccount = conn.prepareStatement(DELETE_ACCOUNT);
         queryDeleteAccountContact = conn.prepareStatement(DELETE_ACCOUNT_CONTACT);
+        querySelectAccount = conn.prepareStatement(SELECT_ACCOUNT);
+        querySelectContact = conn.prepareStatement(SELECT_CONTACT);
+        queryUpdateAccountCredentials = conn.prepareStatement(UPDATE_ACCOUNT_CREDENTIALS);
         queryGetLock = conn.prepareStatement(GET_LOCK);
         queryReleaseLock = conn.prepareStatement(RELEASE_LOCK);
+        queryCheckReady = conn.prepareStatement(CHECK_READY);
 
         queryRetrieveMaxNid = conn.prepareStatement(RETRIEVE_MAX_NID);
         queryRetrieveMaxCid = conn.prepareStatement(RETRIEVE_MAX_CID);
@@ -229,6 +247,15 @@ public class DatabaseUtilities {
             if(queryDeleteAccountContact != null){
                 queryDeleteAccountContact.close();
             }
+            if(querySelectAccount != null){
+                querySelectContact.close();
+            }
+            if(querySelectContact != null){
+                querySelectContact.close();
+            }
+            if(queryUpdateAccountCredentials != null){
+                queryUpdateAccountCredentials.close();
+            }
             if(queryGetLock != null){
                 queryGetLock.close();
             }
@@ -244,6 +271,9 @@ public class DatabaseUtilities {
             if(queryRetrieveMaxAid != null){
                 queryRetrieveMaxAid.close();
             }
+            if(queryCheckReady != null){
+                queryCheckReady.close();
+            }
             if (conn != null) {
                 conn.close();
             }
@@ -254,7 +284,15 @@ public class DatabaseUtilities {
         }
     }
 
-
+    private void checkReady() throws SQLException{
+            queryCheckReady.clearParameters();
+            queryCheckReady.setInt(1, propertiesFile.getReg_default_nid());
+            queryCheckReady.setString(2, propertiesFile.getReg_default_alias());
+            ResultSet resultSet = queryCheckReady.executeQuery();
+            resultSet.next();
+            if (!(resultSet.getInt(1) == 1))
+                throw new SQLException();
+    }
 
     public List<Network> getAllNetworks() throws SQLException {
 
@@ -292,6 +330,40 @@ public class DatabaseUtilities {
             return contacts;
     }
 
+    public Account getAccount(Account account, Network network) throws SQLException{
+        querySelectAccount.clearParameters();
+        querySelectAccount.setString(1, account.getUsername());
+        querySelectAccount.setInt(2,network.getNid());
+        ResultSet resultSet = querySelectAccount.executeQuery();
+        if(resultSet.next())
+            return new Account(resultSet.getInt(1), resultSet.getString(2),
+                    resultSet.getString(3), resultSet.getString(4), resultSet.getInt(5));
+        else
+            throw new SQLException("Account not found");
+    }
+
+    public boolean updateAccountCredentials(Account account){
+        try {
+            queryUpdateAccountCredentials.clearParameters();
+            queryUpdateAccountCredentials.setString(1, account.getPassword());
+            queryUpdateAccountCredentials.setString(2,account.getSalt());
+            queryUpdateAccountCredentials.setInt(3, account.getIterations());
+            queryUpdateAccountCredentials.setInt(4,account.getAid());
+            if(!(queryUpdateAccountCredentials.executeUpdate() == 0))
+                return true;
+        }catch (SQLException e){}
+        return false;
+    }
+
+    public Contact getContact(Account account) throws SQLException{
+        querySelectContact.clearParameters();
+        querySelectContact.setInt(1, account.getAid());
+        ResultSet resultSet = queryDeleteContact.executeQuery();
+        if(resultSet.next())
+            return new Contact(resultSet.getInt(1));
+        else
+            throw new SQLException("Contact not found");
+    }
 
     /**
      * Add a new contact to the database for the specified network along with the account details
@@ -417,82 +489,5 @@ public class DatabaseUtilities {
 
 
     //  ------------------------- TEMPORARY METHODs FOR TESTING PURPOSES ----------------------------------------------
-    public boolean tempMethod() {
-
-        try {
-            Statement statement = conn.createStatement();
-            statement.execute("DELETE FROM networkContacts");
-            statement.execute("DELETE FROM chatroomContacts");
-            statement.execute("DELETE FROM networks");
-            statement.execute("DELETE FROM accountContact");
-            statement.execute("DELETE FROM accounts");
-            statement.execute("DELETE FROM contacts");
-            statement.execute("DELETE FROM chatrooms");
-
-            return true;
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean addNetworks(List<Network> networks) {
-
-        try {
-            try {
-                PreparedStatement queryInsertNetworks = conn.prepareStatement("INSERT INTO networks(nid, fingerprint, port," +
-                        " network_alias) VALUES(?,?,?,?)");
-
-                conn.setAutoCommit(false);
-                queryInsertNetworks.clearBatch();
-
-                for (Network network : networks) {
-                    if (network.getPort() >= 1024 && network.getPort() <= 65535 && aliasPattern.matcher(network.getNetwork_alias()).matches()) {
-                        queryInsertNetworks.setInt(1, networkCounter++);
-                        queryInsertNetworks.setString(2, network.getFingerprint());
-                        queryInsertNetworks.setInt(3, network.getPort());
-                        queryInsertNetworks.setString(4, network.getNetwork_alias());
-                        queryInsertNetworks.addBatch();
-
-                    } else {
-                        throw new SQLException("Format incorrect");
-                    }
-                }
-                if(Arrays.stream(queryInsertNetworks.executeBatch()).anyMatch(x -> x == 0))
-                    throw new SQLException("Format incorrect");
-
-                conn.commit();
-                return true;
-
-            } catch (SQLException e) {
-                System.out.println("failed to add networks" + e.getMessage());
-                conn.rollback();
-            } finally {
-                conn.setAutoCommit(true);
-            }
-        }catch (SQLException e){}
-        return false;
-    }
-
-    public List<Network> getNetworks(List<Network> networks) throws SQLException{
-
-         PreparedStatement querySelectNetworks = conn.prepareStatement("SELECT fingerprint, port, network_alias FROM " +
-                 "networks WHERE nid = ?");
-
-        for(Network network : networks){
-            querySelectNetworks.clearParameters();
-            querySelectNetworks.setInt(1,network.getNid());
-            ResultSet resultSet = querySelectNetworks.executeQuery();
-            if(resultSet.next()){
-                network.setFingerprint(resultSet.getString(1));
-                network.setPort(resultSet.getInt(2));
-                network.setNetwork_alias(resultSet.getString(3));
-            } else {
-                throw new SQLException();
-            }
-        }
-        return networks;
-    }
-
 
 }

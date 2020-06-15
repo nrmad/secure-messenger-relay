@@ -6,21 +6,31 @@ import java.util.Properties;
 
 public class ReadPropertiesFile {
 
+
     private static ReadPropertiesFile readPropertiesFile;
     private static Properties properties = new Properties();
     private static FileInputStream ip;
     private static final String db_lock_key = "lock-string";
+    private static final String reg_default_nid_key = "reg-default-nid";
+    private static final String reg_default_port_key = "reg-default-port";
+    private static final String reg_default_alias_key = "reg-default-alias";
     private final String db_lock;
-
+    private final int reg_default_nid;
+    private final String reg_default_alias;
 
     private ReadPropertiesFile() throws IOException {
 
         ip = new FileInputStream("/etc/secure-messenger-relay/relay.properties");
         properties.load(ip);
-        if(properties.containsKey(db_lock_key))
+        if(properties.containsKey(db_lock_key) &&
+                properties.containsKey(reg_default_nid_key) &&
+                properties.containsKey(reg_default_alias_key)){
             db_lock = properties.getProperty(db_lock_key);
-        else
+            reg_default_nid = Integer.parseInt(properties.getProperty(reg_default_nid_key));
+            reg_default_alias = properties.getProperty(reg_default_alias_key);
+        } else{
             throw new IllegalArgumentException();
+        }
     }
 
     public static ReadPropertiesFile getInstance() throws IOException {
@@ -31,5 +41,13 @@ public class ReadPropertiesFile {
 
     public String getDb_lock() {
         return db_lock;
+    }
+
+    public int getReg_default_nid() {
+        return reg_default_nid;
+    }
+
+    public String getReg_default_alias() {
+        return reg_default_alias;
     }
 }

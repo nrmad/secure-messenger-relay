@@ -13,22 +13,21 @@ public class RecieverClientThread implements Runnable{
     private final SSLSocket sslSocket;
     private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap;
     private final BlockingQueue<Packet> channel;
-    private final int cid;
+    private final int nid;
 
-    public RecieverClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap, BlockingQueue<Packet> channel, int cid){
+    public RecieverClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap, BlockingQueue<Packet> channel, int nid){
         this.sslSocket = sslSocket;
         this.channelMap = channelMap;
         this.channel = channel;
-        this.cid = cid;
+        this.nid = nid;
     }
 
     public void run(){
-
-//        ArrayBlockingQueue<Packet> channel;
         boolean quit = false;
         Optional<BlockingQueue<Packet>> destChannel;
-
         try (ObjectInputStream input = new ObjectInputStream( new BufferedInputStream(sslSocket.getInputStream()))) {
+            // AUTHENTICATE HERE
+
             while (!quit) {
                 try {
                     Packet packet = (Packet) input.readObject();
@@ -49,11 +48,9 @@ public class RecieverClientThread implements Runnable{
                 }catch (ClassNotFoundException e){}
             }
         }catch (IOException | InterruptedException e){}
-//        finally {
-//            countDownLatch.countDown();
-//        }
+    }
 
+    public int authenticate(String username, String password){
 
-        // SHOULD PROBABLY DEC COUNTDOWN HERE
     }
 }

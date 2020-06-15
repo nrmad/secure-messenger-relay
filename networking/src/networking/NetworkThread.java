@@ -37,7 +37,7 @@ public class NetworkThread implements Runnable {
 
                 try {
                     SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
-                    clientThreads.execute(new ClientThread(sslSocket, channelMap));
+                    clientThreads.execute(new ClientThread(sslSocket, channelMap, nid));
 
                 } catch (IOException e) {
                     e.printStackTrace();
