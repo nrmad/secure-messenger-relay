@@ -172,7 +172,7 @@ public class DatabaseUtilities {
     private void getLock() throws SQLException{
 
         queryGetLock.clearParameters();
-        queryGetLock.setString(1, propertiesFile.getDb_lock());
+        queryGetLock.setString(1, propertiesFile.getDbLock());
         ResultSet resultSet = queryGetLock.executeQuery();
         resultSet.next();
         if(resultSet.getInt(1) == 0)
@@ -182,7 +182,7 @@ public class DatabaseUtilities {
     private void releaseLock() throws SQLException{
 
         queryReleaseLock.clearParameters();
-        queryReleaseLock.setString(1, propertiesFile.getDb_lock());
+        queryReleaseLock.setString(1, propertiesFile.getDbLock());
         queryReleaseLock.execute();
     }
 
@@ -286,8 +286,8 @@ public class DatabaseUtilities {
 
     private void checkReady() throws SQLException{
             queryCheckReady.clearParameters();
-            queryCheckReady.setInt(1, propertiesFile.getReg_default_nid());
-            queryCheckReady.setString(2, propertiesFile.getReg_default_alias());
+            queryCheckReady.setInt(1, propertiesFile.getRegDefaultNid());
+            queryCheckReady.setString(2, propertiesFile.getRegDefaultAlias());
             ResultSet resultSet = queryCheckReady.executeQuery();
             resultSet.next();
             if (!(resultSet.getInt(1) == 1))

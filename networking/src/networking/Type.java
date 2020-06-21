@@ -11,7 +11,10 @@ public enum Type {
     END_SESSION(2),
     RELAY_SHUTDOWN(3),
     ACCEPT_USER(4),
-    REQUEST_USER(5);
+    REQUEST_USER(5),
+    AUTHENTICATE(6),
+    AUTH_FAILED(7),
+    AUTH_SUCCESS(8);
 
     private final int code;
     private static Map<Integer,Type> map = new HashMap<>();

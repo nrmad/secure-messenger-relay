@@ -69,4 +69,12 @@ public class Packet implements Externalizable {
     public static Packet getShutdownPacket(int destination, int source){
         return new Packet(destination, source, Type.RELAY_SHUTDOWN, "", "");
     }
+
+    public static Packet getAuthSuccessPacket(int cid){
+        return new Packet(-1, cid, Type.AUTH_SUCCESS, "", "" );
+    }
+
+    public static Packet getAuthFailedPacket(){
+        return new Packet(-1,-1, Type.AUTH_FAILED, "", "");
+    }
 }

@@ -21,10 +21,11 @@ import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAKeyGenParameterSpec;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 public class SecurityUtilities {
 
@@ -38,12 +39,12 @@ public class SecurityUtilities {
     private static final String SIGNATURE_ALG = "SHA384with" + ASYMMETRIC_KEY_ALG;
     private static final String SECURE_RANDOM_ALG = "SHA1PRNG";
     private static final String AUTH_HASH_DIGEST_ALG = "PBKDF2WithHmacSHA512";
-    private static final File TRUSTSTORE_NAME = new File("../resources/truststore.p12");
-    private static final File KEYSTORE_NAME = new File("../resources/keystore.p12");
+    private static final File TRUSTSTORE_NAME = new File("/var/lib/secure-messenger-relay/truststore.p12");
+    private static final File KEYSTORE_NAME = new File("/var/lib/secure-messenger-relay/keystore.p12");
 
-    private static final int NUM_ITERATIONS = 100000;
-
+//    private static final int NUM_ITERATIONS = 100000;
     private static long serialNumberBase = System.currentTimeMillis();
+
 
     // APPARENTLY FUNCTIONALITY TO UPDATE KS PASSWORDS IS GOOD
 
@@ -346,22 +347,22 @@ public class SecurityUtilities {
         return salt;
     }
 
-    /**
-     * Performs a hash + salt operation on the user provided password
-     * @param password the user provided password
-     * @return the hashed and salted password
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     */
-    static String getAuthennticationHash(String password)
-            throws  NoSuchAlgorithmException, InvalidKeySpecException
-    {
-        return getAuthenticationHash(password,  NUM_ITERATIONS);
-    }
+//    /**
+//     * Performs a hash + salt operation on the user provided password
+//     * @param password the user provided password
+//     * @return the hashed and salted password
+//     * @throws NoSuchAlgorithmException
+//     * @throws InvalidKeySpecException
+//     */
+//    public static String getAuthennticationHash(String password)
+//            throws  NoSuchAlgorithmException, InvalidKeySpecException
+//    {
+//        return getAuthenticationHash(password,  NUM_ITERATIONS);
+//    }
 
 
-    static String getAuthenticationHash(String password, int iterations)
-            throws  NoSuchAlgorithmException, InvalidKeySpecException
+    public static List<String> getAuthenticationHash(String password, int iterations)
+            throws  GeneralSecurityException
     {
         byte[] salt = getSalt();
         char[] chars = password.toCharArray();
@@ -370,13 +371,26 @@ public class SecurityUtilities {
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(AUTH_HASH_DIGEST_ALG);
         byte[] hashWithSalt = secretKeyFactory.generateSecret(spec).getEncoded();
 
-        String authHash= Base64.getEncoder().encodeToString(hashWithSalt);
-        authHash += ":";
-        authHash += Base64.getEncoder().encodeToString(salt);
-        authHash += ":";
-        authHash += Integer.toString(iterations);
+        List<String> authHash = new ArrayList<>();
+
+        authHash.add(Base64.getEncoder().encodeToString(hashWithSalt));
+        authHash.add(Base64.getEncoder().encodeToString(salt));
+//        authHash.add(Integer.toString(iterations));
 
         return authHash;
+    }
+
+    public static String getAuthenticationHash(String password, String salt, int iterations)
+            throws  GeneralSecurityException
+    {
+        byte[] salt1 = Base64.getDecoder().decode(salt);
+        char[] chars = password.toCharArray();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, salt1, iterations, 512);
+        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(AUTH_HASH_DIGEST_ALG);
+        byte[] hashWithSalt = secretKeyFactory.generateSecret(spec).getEncoded();
+
+        return Base64.getEncoder().encodeToString(hashWithSalt);
     }
 
 }

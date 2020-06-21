@@ -14,13 +14,16 @@ public class NetworkThread implements Runnable {
     private final int nid;
     private final int tlsPort;
     private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>> channelMap;
+    private final int authIterations;
 
 
-    public NetworkThread(SecureSocketManager secureSocketManager, int nid, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>> channelMap, int tlsPort) {
+    public NetworkThread(SecureSocketManager secureSocketManager, int nid, ConcurrentHashMap<Integer,
+            Optional<BlockingQueue<Packet>>> channelMap, int tlsPort,int authIterations) {
         this.secureSocketManager = secureSocketManager;
         this.nid = nid;
         this.tlsPort = tlsPort;
         this.channelMap = channelMap;
+        this.authIterations = authIterations;
     }
 
     public void run() {
@@ -37,7 +40,7 @@ public class NetworkThread implements Runnable {
 
                 try {
                     SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
-                    clientThreads.execute(new ClientThread(sslSocket, channelMap, nid));
+                    clientThreads.execute(new ClientThread(sslSocket, channelMap, nid, authIterations));
 
                 } catch (IOException e) {
                     e.printStackTrace();

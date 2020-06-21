@@ -3,6 +3,7 @@ package orchestrator;
 import datasource.Contact;
 import datasource.DatabaseUtilities;
 import datasource.Network;
+import datasource.ReadPropertiesFile;
 import networking.NetworkThread;
 import networking.Packet;
 import networking.SecureSocketManager;
@@ -26,6 +27,7 @@ public class Main {
 
         try{
                 String[] credentials = getCredentials();
+                ReadPropertiesFile propertiesFile = ReadPropertiesFile.getInstance();
                 DatabaseUtilities.setDatabaseUtilities(credentials[0], credentials[1]);
                 databaseUtilities = DatabaseUtilities.getInstance();
 
@@ -61,7 +63,8 @@ public class Main {
 
                     // START NEW NETWORKTHREAD ??? NEED TO KNOW ABOUT LINUX SERVICES SHOULD THIS OBJECT BE RETAINED
 
-                    threadManager.execute(new NetworkThread(secureSocketManager, network.getNid(), channelMap, network.getPort()));
+                    threadManager.execute(new NetworkThread(secureSocketManager, network.getNid(), channelMap,
+                            network.getPort(), propertiesFile.getAuthIterations()));
 
                 }
 
