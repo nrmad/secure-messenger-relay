@@ -25,7 +25,7 @@ public class ReadPropertiesFile {
         if(properties.containsKey(db_lock_key) &&
                 properties.containsKey(reg_default_nid_key) &&
                 properties.containsKey(reg_default_alias_key) &&
-                properties.contains(auth_iterations_key)){
+                properties.containsKey(auth_iterations_key)){
             db_lock = properties.getProperty(db_lock_key);
             reg_default_nid = Integer.parseInt(properties.getProperty(reg_default_nid_key));
             reg_default_alias = properties.getProperty(reg_default_alias_key);

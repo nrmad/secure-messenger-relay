@@ -3,6 +3,8 @@ package networking;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.*;
 
@@ -11,18 +13,16 @@ import static java.lang.Thread.interrupted;
 public class NetworkThread implements Runnable {
 
     private SecureSocketManager secureSocketManager;
-    private final int nid;
     private final int tlsPort;
-    private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>> channelMap;
+    private final HashMap<Integer,ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap ;
     private final int authIterations;
 
 
-    public NetworkThread(SecureSocketManager secureSocketManager, int nid, ConcurrentHashMap<Integer,
-            Optional<BlockingQueue<Packet>>> channelMap, int tlsPort,int authIterations) {
+    public NetworkThread(SecureSocketManager secureSocketManager, HashMap<Integer,ConcurrentMap<Integer,
+            Optional<BlockingQueue<Packet>>>> networkMap, int tlsPort, int authIterations) {
         this.secureSocketManager = secureSocketManager;
-        this.nid = nid;
         this.tlsPort = tlsPort;
-        this.channelMap = channelMap;
+        this.networkMap = networkMap;
         this.authIterations = authIterations;
     }
 
@@ -40,7 +40,7 @@ public class NetworkThread implements Runnable {
 
                 try {
                     SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
-                    clientThreads.execute(new ClientThread(sslSocket, channelMap, nid, authIterations));
+                    clientThreads.execute(new ClientThread(sslSocket, networkMap, authIterations));
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -50,18 +50,22 @@ public class NetworkThread implements Runnable {
         clientThreads.shutdown();
 
             // There should be no second interrupt so having this unchecked lambda wrapper is acceptable
-           channelMap.entrySet()
+           networkMap.values()
                    .stream()
-                   .filter(e -> e.getValue().isPresent())
-                   .forEach(ThrowingConsumer.unchecked(e -> e.getValue().get().put(Packet.getShutdownPacket(e.getKey(), nid))));
+                   .map(ConcurrentMap::values)
+                   .flatMap(Collection::stream)
+                   .filter(Optional::isPresent)
+                   .map(Optional::get)
+                   .forEach(q -> { try {
+                       q.put(new ShutdownPacket());
+                   }catch (InterruptedException e){}
+                   });
+
            if(!clientThreads.awaitTermination(3, TimeUnit.MINUTES))
                clientThreads.shutdownNow();
 
         } catch (IOException | InterruptedException e) {
             clientThreads.shutdownNow();
         }
-
-
     }
-
 }

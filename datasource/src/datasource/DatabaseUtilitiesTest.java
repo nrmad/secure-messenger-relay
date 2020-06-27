@@ -22,7 +22,12 @@ public class DatabaseUtilitiesTest {
     private static Connection conn;
 
     private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
+    private static final String INSERT_NETWORKS = "INSERT INTO networks(nid, network_alias) VALUES(?,?)";
+    private static final String INSERT_NETWORK_PORTS = "INSERT INTO networkPorts(nid, pid) VALUES(?,?)";
+
     private static PreparedStatement queryRetrieveMaxNid;
+    private static PreparedStatement queryInsertNetworks;
+    private static PreparedStatement queryInsertNetworkPorts;
     private static int networkCounter;
     private static Pattern aliasPattern = Pattern.compile("\\w{1,255}");
 
@@ -37,23 +42,17 @@ public class DatabaseUtilitiesTest {
             statement.execute("USE secure_messenger_relay");
 
             queryRetrieveMaxNid = conn.prepareStatement(RETRIEVE_MAX_NID);
+            queryInsertNetworkPorts = conn.prepareStatement(INSERT_NETWORK_PORTS);
+            queryInsertNetworks = conn.prepareStatement(INSERT_NETWORKS);
             ResultSet result;
             result = queryRetrieveMaxNid.executeQuery();
             if (result.next())
                 networkCounter = result.getInt(1) + 1;
 
-            // USE METHODS TO PREPARE DB
-
-            List<Network> networks = new ArrayList<>();
-            networks.add( new Network(1,"fingerprint1", 2048, "REGISTRATION"));
-            networks.add( new Network (2, "fingerprint2", 2999, "james"));
-            addNetworks(networks);
-
-            DatabaseUtilities.setDatabaseUtilities( username, password);
+            seedDatabase();
+            DatabaseUtilities.setDatabaseUtilities(username, password);
             databaseUtilities = DatabaseUtilities.getInstance();
-
             tempMethod();
-
         }catch(SQLException | IOException e){
             System.out.println(e.getMessage());
         }
@@ -61,21 +60,22 @@ public class DatabaseUtilitiesTest {
 
     @After
     public void tearDown() {
-
-        tempMethod();
-    }
+try {
+    tempMethod();
+}catch (SQLException e){}
+}
 
     @org.junit.Test
     public void setDatabaseUtilities() {
-            assertNotNull(databaseUtilities);
+        assertNotNull(databaseUtilities);
     }
 
-    @org.junit.Test
-    public void getInstance() {
-        try {
-            assertNotNull(DatabaseUtilities.getInstance());
-        }catch (SQLException e){}
-    }
+//    @org.junit.Test
+//    public void getInstance() {
+//        try {
+//            assertNotNull(DatabaseUtilities.getInstance());
+//        }catch (SQLException e){}
+//    }
 
 
     @org.junit.Test
@@ -84,9 +84,9 @@ public class DatabaseUtilitiesTest {
         List<Network> networks = new ArrayList<>(), networks1;
         // add a bunch of networks then call get and assert true that it returns
         try {
-            networks.add(new Network(1, "1",2050, "tom"));
-            networks.add(new Network(2,"2", 3000, "dick"));
-            networks.add(new Network(3, "3",3005, "harry"));
+            networks.add(new Network(1, new Port(2049),"tom"));
+            networks.add(new Network(2, new Port(2049), "dick"));
+            networks.add(new Network(3, new Port(2049), "harry"));
             addNetworks(networks);
 
 
@@ -95,8 +95,8 @@ public class DatabaseUtilitiesTest {
             networks1 = databaseUtilities.getAllNetworks();
             for(int i = 0; i< networks.size(); i++){
                 assertEquals(networks.get(i).getNid(), networks1.get(i).getNid());
-                assertEquals(networks.get(i).getPort(), networks1.get(i).getPort());
-                assertEquals(networks.get(i).getNetwork_alias(), networks1.get(i).getNetwork_alias());
+                assertEquals(networks.get(i).getPort().getTLSPort(), networks1.get(i).getPort().getTLSPort());
+                assertEquals(networks.get(i).getNetworkAlias(), networks1.get(i).getNetworkAlias());
             }
         }catch (SQLException e){
             fail("failed it");
@@ -108,7 +108,7 @@ public class DatabaseUtilitiesTest {
     public void getNetworkContacts(){
         List<Network> networks = new ArrayList<>();
         List<Contact> contacts;
-        networks.add(new Network(1, "1",2050, "tom"));
+        networks.add(new Network(1,  "tom"));
         Contact contact1 = new Contact(1, "tomboi");
         Contact contact2 = new Contact(2, "dickboi");
         Contact contact3 = new Contact(3, "harryboi");
@@ -145,7 +145,7 @@ public class DatabaseUtilitiesTest {
     @org.junit.Test
     public void getAccount(){
         List<Network> networks = new ArrayList<>();
-        networks.add(new Network(1, "1",2050, "tom"));
+        networks.add(new Network(1,  "tom"));
         Contact contact1 = new Contact(1, "tomboi");
         Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
         Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
@@ -160,8 +160,8 @@ public class DatabaseUtilitiesTest {
         databaseUtilities.addUser(contact1, networks.get(0), account1);
 
         try{
-            assertEquals(account1,databaseUtilities.getAccount(account1, networks.get(0)));
-            databaseUtilities.getAccount(account2, networks.get(0));
+            assertEquals(account1,databaseUtilities.getAccount(account1));
+            databaseUtilities.getAccount(account2);
             fail();
         }catch (SQLException e){}
 
@@ -171,7 +171,7 @@ public class DatabaseUtilitiesTest {
     public void updateAccountCredentials(){
 
         List<Network> networks = new ArrayList<>();
-        networks.add(new Network(1, "1",2050, "tom"));
+        networks.add(new Network(1, "tom"));
         Contact contact1 = new Contact(1, "tomboi");
         Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
         Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
@@ -191,7 +191,7 @@ public class DatabaseUtilitiesTest {
     @org.junit.Test
     public void getContact(){
         List<Network> networks = new ArrayList<>();
-        networks.add(new Network(1, "1",2050, "tom"));
+        networks.add(new Network(1, "tom"));
         Contact contact1 = new Contact(1, "tomboi");
         Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
         Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
@@ -219,7 +219,7 @@ public class DatabaseUtilitiesTest {
         Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
         Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
         Account account3 = new Account(3, "anon", "pass3", "salt3",12000);
-        networks.add(new Network(1, "1",2050, "tom"));
+        networks.add(new Network(1, "tom"));
         contacts.add(contact1);
         contacts.add(contact2);
         contacts.add(contact3);
@@ -256,7 +256,7 @@ public class DatabaseUtilitiesTest {
         Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
         Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
         Account account3 = new Account(3, "anon", "pass3", "salt3",12000);
-        networks.add(new Network(1, "1",2050, "tom"));
+        networks.add(new Network(1,  "tom"));
 
         addNetworks(networks);
         try{
@@ -267,11 +267,11 @@ public class DatabaseUtilitiesTest {
         databaseUtilities.addUser(contact2, networks.get(0), account2);
         databaseUtilities.addUser(contact3, networks.get(0), account3);
 
-       assertTrue(databaseUtilities.deleteUser(contact1, account1));
-       assertTrue(databaseUtilities.deleteUser(contact2, account2));
-       assertTrue(databaseUtilities.deleteUser(contact3, account3));
-       assertFalse(databaseUtilities.deleteUser(new Contact(66, "notAnAlias"), new Account(66,"james", "barnoby","salty",12000)));
-        assertFalse(databaseUtilities.deleteUser(new Contact(99, "notAnAlias"), new Account(99,"jack", "johnson","salty",12000)));
+       assertTrue(databaseUtilities.deleteUser(contact1));
+       assertTrue(databaseUtilities.deleteUser(contact2));
+       assertTrue(databaseUtilities.deleteUser(contact3));
+       assertFalse(databaseUtilities.deleteUser(new Contact(66, "notAnAlias")));
+        assertFalse(databaseUtilities.deleteUser(new Contact(99, "notAnAlias")));
 
         try {
             assertTrue(databaseUtilities.getNetworkContacts(networks.get(0)).isEmpty());
@@ -281,55 +281,74 @@ public class DatabaseUtilitiesTest {
 
     }
 
-    // ------------------------------------------
-    public static boolean tempMethod() {
+    @org.junit.Test
+    public void getAccountNetwork() {
 
-        try {
+        List<Network> networks = new ArrayList<>();
+        Network network1 = new Network(1,  "tom");
+        Contact contact1 = new Contact(1, "tomboi");
+        Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
+        networks.add(network1);
+
+        addNetworks(networks);
+        try{
+            networks = databaseUtilities.getAllNetworks();
+
+        databaseUtilities.addUser(contact1, networks.get(0), account1);
+        Network network2 = databaseUtilities.getAccountNetwork(account1);
+        assertEquals(network1, network2);
+        }catch (SQLException e){fail();}
+
+    }
+
+
+    // ------------------------------------------
+    public static void tempMethod() throws SQLException {
+
             Statement statement = conn.createStatement();
+            statement.execute("DELETE FROM networkPorts");
+//            statement.execute("DELETE FROM ports");
+            statement.execute("DELETE FROM accountContact");
+            statement.execute("DELETE FROM accounts");
             statement.execute("DELETE FROM networkContacts");
             statement.execute("DELETE FROM chatroomContacts");
             statement.execute("DELETE FROM networks");
-            statement.execute("DELETE FROM accountContact");
-            statement.execute("DELETE FROM accounts");
             statement.execute("DELETE FROM contacts");
             statement.execute("DELETE FROM chatrooms");
-
-            return true;
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
     }
 
     public static boolean addNetworks(List<Network> networks) {
 
         try {
+            int currentNetCount = networkCounter, tempNetCount;
             try {
-                PreparedStatement queryInsertNetworks = conn.prepareStatement("INSERT INTO networks(nid, fingerprint, port," +
-                        " network_alias) VALUES(?,?,?,?)");
-
                 conn.setAutoCommit(false);
                 queryInsertNetworks.clearBatch();
+                queryInsertNetworkPorts.clearBatch();
 
                 for (Network network : networks) {
-                    if (network.getPort() >= 1024 && network.getPort() <= 65535 && aliasPattern.matcher(network.getNetwork_alias()).matches()) {
-                        queryInsertNetworks.setInt(1, networkCounter++);
-                        queryInsertNetworks.setString(2, network.getFingerprint());
-                        queryInsertNetworks.setInt(3, network.getPort());
-                        queryInsertNetworks.setString(4, network.getNetwork_alias());
+                    if (aliasPattern.matcher(network.getNetworkAlias()).matches()) {
+                        tempNetCount = networkCounter++;
+                        queryInsertNetworks.setInt(1, tempNetCount);
+                        queryInsertNetworks.setString(2, network.getNetworkAlias());
                         queryInsertNetworks.addBatch();
 
+                        queryInsertNetworkPorts.setInt(1, tempNetCount);
+                        queryInsertNetworkPorts.setInt(2, 2);
+                        queryInsertNetworkPorts.addBatch();
                     } else {
                         throw new SQLException("Format incorrect");
                     }
                 }
-                if(Arrays.stream(queryInsertNetworks.executeBatch()).anyMatch(x -> x == 0))
+                if(Arrays.stream(queryInsertNetworks.executeBatch()).anyMatch(x -> x == 0)) {
                     throw new SQLException("Format incorrect");
-
+                }
+                queryInsertNetworkPorts.executeBatch();
                 conn.commit();
                 return true;
 
             } catch (SQLException e) {
+                networkCounter = currentNetCount;
                 System.out.println("failed to add networks" + e.getMessage());
                 conn.rollback();
             } finally {
@@ -339,30 +358,17 @@ public class DatabaseUtilitiesTest {
         return false;
     }
 
-//    public static List<Network> getNetworks(List<Network> networks) throws SQLException{
-//
-//        PreparedStatement querySelectNetworks = conn.prepareStatement("SELECT fingerprint, port, network_alias FROM " +
-//                "networks WHERE nid = ?");
-//
-//        for(Network network : networks){
-//            querySelectNetworks.clearParameters();
-//            querySelectNetworks.setInt(1,network.getNid());
-//            ResultSet resultSet = querySelectNetworks.executeQuery();
-//            if(resultSet.next()){
-//                network.setFingerprint(resultSet.getString(1));
-//                network.setPort(resultSet.getInt(2));
-//                network.setNetwork_alias(resultSet.getString(3));
-//            } else {
-//                throw new SQLException();
-//            }
-//        }
-//        return networks;
-//    }
 
+    private static void seedDatabase() throws SQLException{
 
+        Statement statement = conn.createStatement();
+        statement.execute("INSERT IGNORE INTO networks(nid, network_alias) VALUES(1, 'REGISTRATION')," +
+                "(2, 'james')");
+        statement.execute("INSERT IGNORE INTO ports(pid, port) VALUES(1, 2048)," +
+                " (2, 2049)");
+        statement.execute("INSERT IGNORE INTO networkPorts(nid, pid) VALUES(1,1)," +
+                " (2,2)");
 
-
-
-
+    }
 
 }

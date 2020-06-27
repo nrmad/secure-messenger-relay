@@ -18,26 +18,23 @@ public class SecureSocketManager {
 
     private static SSLContext sslContext = null;
 
-    public SecureSocketManager(KeyStore keystore, KeyStore truststore, String password) throws IOException, GeneralSecurityException
+    public SecureSocketManager(KeyStore keystore, String password) throws IOException, GeneralSecurityException
     {
-        initContext(keystore, truststore, password);
+        initContext(keystore, password);
     }
 
     // IF THIS FAILS SO SHOULD LOGIN BECAUSE NO CONNECTIONS WILL BE ATTAINABLE WITHOUT THE SSLCONTEXT
-    private static void initContext(KeyStore keystore, KeyStore truststore, String password)
-            throws GeneralSecurityException, IOException
+    private static void initContext(KeyStore keystore, String password)
+            throws GeneralSecurityException
     {
         char[] entryPassword = password.toCharArray();
         // COULD ADD PROVIDER IN THESE FOR CONSISTENCY
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KEY_MANAGER);
         keyManagerFactory.init(keystore, entryPassword);
 
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(KEY_MANAGER);
-        trustManagerFactory.init(truststore);
-
         // specify TLS version e.g. TLSv1.3
         SSLContext sslContext = SSLContext.getInstance(TLS_VERSION);
-        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstance(RNG_ALGORITHM, RNG_PROVIDER));
+        sslContext.init(keyManagerFactory.getKeyManagers(),null, SecureRandom.getInstance(RNG_ALGORITHM, RNG_PROVIDER));
 
 
         SecureSocketManager.sslContext = sslContext;

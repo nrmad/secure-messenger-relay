@@ -1,28 +1,23 @@
 package networking;
 
-import datasource.ReadPropertiesFile;
-
 import javax.net.ssl.SSLSocket;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class ClientThread implements Runnable {
 
     private final SSLSocket sslSocket;
-    private final ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap;
-    private final int nid;
+    private final HashMap<Integer, ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap ;
     private final int authIterations;
 
-    public ClientThread(SSLSocket sslSocket, ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>>  channelMap,
-                        int nid, int authIterations){
+    public ClientThread(SSLSocket sslSocket, HashMap<Integer,ConcurrentMap<Integer,
+            Optional<BlockingQueue<Packet>>>> networkMap, int authIterations){
     this.sslSocket = sslSocket;
-    this.channelMap = channelMap;
-    this.nid = nid;
+    this.networkMap = networkMap;
     this.authIterations = authIterations;
     }
 
@@ -30,14 +25,10 @@ public class ClientThread implements Runnable {
         try {
             // ??? MAYBE HAVE THE QUEUE CONFIGURABLE
             BlockingQueue<Packet> channel = new ArrayBlockingQueue<>(100);
-            // ??? DOES THIS CALCULATE THE CORRECT CID
-//            Certificate[] serverCerts = sslSocket.getSession().getPeerCertificates();
-//            String cid = SecurityUtilities.calculateFingerprint(serverCerts[0].getEncoded());
 
-             Thread receiver = new Thread(new ReceiverClientThread(sslSocket, channelMap, channel, nid, authIterations));
-             Thread sender = new Thread(new SenderClientThread(sslSocket, channelMap, channel));
+             Thread receiver = new Thread(new ReceiverClientThread(sslSocket, networkMap, channel, authIterations));
+             Thread sender = new Thread(new SenderClientThread(sslSocket, networkMap, channel));
 
-             if(!channelMap.get(cid).isPresent()) {
               receiver.start();
               sender.start();
                  try {
@@ -46,9 +37,9 @@ public class ClientThread implements Runnable {
                      receiver.interrupt();
                      sender.interrupt();
                  }
-             }
 
-        } catch (GeneralSecurityException | IOException | SQLException e) {
+
+        } catch ( SQLException e) {
             // LOGGING HERE ON PRODUCTION
             e.printStackTrace();
         }

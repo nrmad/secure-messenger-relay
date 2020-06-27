@@ -10,6 +10,7 @@ public class Account {
     private String salt;
     private int iterations;
 
+
     public Account(int aid, String username, String password, String salt, int iterations) {
         this.aid = aid;
         this.username = username;
