@@ -1,4 +1,4 @@
-package networking;
+package packets;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -49,15 +49,18 @@ public class Packet implements Externalizable {
         source = in.readInt();
     }
 
-     enum Type {
+     public enum Type {
         MESSAGE,
         ACK,
         END_SESSION,
         RELAY_SHUTDOWN,
-        ACCEPT_USER,
-        REQUEST_USER,
+        ACCEPT_JOIN,
+        REFUSE_JOIN,
+        REQUEST_JOIN,
         AUTHENTICATE,
         AUTH_FAILED,
-        AUTH_SUCCESS;
+        AUTH_SUCCESS,
+        DELETE_ACCOUNT,
+        CANCEL_OPERATION;
     }
 }

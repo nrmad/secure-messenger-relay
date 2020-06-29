@@ -1,4 +1,4 @@
-package networking;
+package packets;
 
 import java.io.Externalizable;
 import java.io.ObjectInput;
@@ -16,7 +16,9 @@ public class AuthSuccessPacket extends Packet implements Externalizable {
         this.nid = nid;
     }
 
-    public AuthSuccessPacket() {}
+    public AuthSuccessPacket() {
+        super(Type.AUTH_SUCCESS);
+    }
 
     public int getCid() {
         return cid;

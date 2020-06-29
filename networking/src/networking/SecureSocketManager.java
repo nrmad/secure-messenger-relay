@@ -49,9 +49,7 @@ public class SecureSocketManager {
      */
     public SSLServerSocket getSslServerSocket(int tlsPort)throws IOException{
         SSLServerSocketFactory fact = sslContext.getServerSocketFactory();
-        SSLServerSocket sSock = (SSLServerSocket) fact.createServerSocket(tlsPort);
-        sSock.setNeedClientAuth(true);
-        return sSock;
+        return (SSLServerSocket) fact.createServerSocket(tlsPort);
     }
 
 }

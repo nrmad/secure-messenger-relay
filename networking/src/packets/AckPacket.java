@@ -1,4 +1,4 @@
-package networking;
+package packets;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -11,7 +11,9 @@ public class AckPacket extends Packet implements Externalizable {
     public static final long serialVersionUID = 10006L;
     private long mid;
 
-    public AckPacket(){}
+    public AckPacket(){
+        super(Type.ACK);
+    }
 
     public AckPacket(int destination, int source, int mid) {
         super(destination, source, Type.ACK);

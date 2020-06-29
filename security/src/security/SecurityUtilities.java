@@ -375,7 +375,6 @@ public class SecurityUtilities {
 
         authHash.add(Base64.getEncoder().encodeToString(hashWithSalt));
         authHash.add(Base64.getEncoder().encodeToString(salt));
-//        authHash.add(Integer.toString(iterations));
 
         return authHash;
     }

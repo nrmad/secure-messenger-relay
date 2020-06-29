@@ -1,22 +1,18 @@
 package orchestrator;
 
-import datasource.Contact;
-import datasource.DatabaseUtilities;
-import datasource.Network;
-import datasource.ReadPropertiesFile;
+import datasource.*;
 import networking.NetworkThread;
-import networking.Packet;
+import packets.Packet;
+import networking.RequestThread;
 import networking.SecureSocketManager;
 import security.SecurityUtilities;
 
+import javax.net.ssl.SSLServerSocket;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -41,8 +37,8 @@ public class Main {
                 HashMap<Integer,ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap = new HashMap<>();
                 ExecutorService threadManager = Executors.newFixedThreadPool(2);
 
+                Set<String> usernames = databaseUtilities.getUsernames();
                 SecureSocketManager secureSocketManager = new SecureSocketManager(keystore, credentials[1]);
-//                ConcurrentHashMap<Integer, Optional<BlockingQueue<Packet>>> channelMap;
 
                 for(Network network : networks) {
 
@@ -58,13 +54,13 @@ public class Main {
                 }
 
             // START NEW NETWORKTHREAD ??? NEED TO KNOW ABOUT LINUX SERVICES SHOULD THIS OBJECT BE RETAINED
-
-            threadManager.execute(new NetworkThread(secureSocketManager, networkMap,networks.get(0).getPort().getTLSPort(),
-                    propertiesFile.getAuthIterations()));
-
+            SSLServerSocket sslServerSocket = secureSocketManager.getSslServerSocket(networks.get(0).getPort().getTLSPort());
+            threadManager.execute(new NetworkThread(sslServerSocket, usernames, networkMap,propertiesFile.getAuthIterations()));
 
             // INIT REQUEST THREAD
 
+            sslServerSocket = secureSocketManager.getSslServerSocket(registration.getPort().getTLSPort());
+            threadManager.execute(new RequestThread(sslServerSocket, networkMap, usernames, propertiesFile.getAuthIterations()));
 
 
             // ADD SIGTERM HOOK

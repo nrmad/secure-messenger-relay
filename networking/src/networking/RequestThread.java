@@ -1,12 +1,16 @@
 package networking;
 
+import packets.Packet;
+
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,29 +18,31 @@ import static java.lang.Thread.interrupted;
 
 public class RequestThread implements Runnable {
 
-    private final int port;
-    private final HashMap<Integer,ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>> networkMap;
+    private SSLServerSocket sslServerSocket;
+    private final HashMap<Integer,ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap;
+    private final Set<String> usernames;
+    private int authIterations;
 
-    public RequestThread(int port,  HashMap<Integer,ConcurrentHashMap<String, Optional<BlockingQueue<Packet>>>> networkMap){
-        this.port = port;
+    public RequestThread(SSLServerSocket sslServerSocket, HashMap<Integer, ConcurrentMap<Integer,
+            Optional<BlockingQueue<Packet>>>> networkMap, Set<String> usernames, int authIterations){
+        this.sslServerSocket = sslServerSocket;
         this.networkMap = networkMap;
+        this.usernames = usernames;
+        this.authIterations = authIterations;
     }
 
     public void run(){
 
         // PERHAPS CONFIGURABLE IN NETWORK CONFIGURATION
         ExecutorService registerRequestThreads = Executors.newFixedThreadPool(100);
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
 
             while (!interrupted()) {
                 try {
-                    Socket socket = serverSocket.accept();
-                    registerRequestThreads.submit(new RegisterRequestThread(socket, networkMap));
-                }catch (IOException e){}
+                    SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
+                    registerRequestThreads.submit(new RequestHandlerThread(sslSocket, networkMap, usernames, authIterations));
+                }catch (IOException | SQLException e){}
             }
-
-        }catch (IOException e){}
+            // SHUTDOWN CODE HERE
     }
 
 }

@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static junit.framework.TestCase.fail;
@@ -301,7 +302,39 @@ try {
 
     }
 
+    @org.junit.Test
+    public void getUsernames(){
+        List<Network> networks = new ArrayList<>();
+        List<Account> accounts = new ArrayList<>();
+        Set<String> usernames;
+        Contact contact1 = new Contact(1, "tomboi");
+        Contact contact2 = new Contact(2, "dickboi");
+        Contact contact3 = new Contact(3, "harryboi");
+        Account account1 = new Account(1,"nrmad", "pass1", "salt1", 12000);
+        Account account2 = new Account(2,"azt4er", "pass2", "salt2", 12000);
+        Account account3 = new Account(3, "anon", "pass3", "salt3",12000);
+        networks.add(new Network(1, "tom"));
+        accounts.add(account3);
+        accounts.add(account2);
+        accounts.add(account1);
 
+        addNetworks(networks);
+        try{
+            networks = databaseUtilities.getAllNetworks();
+
+        databaseUtilities.addUser(contact1, networks.get(0), account1);
+        databaseUtilities.addUser(contact2, networks.get(0), account2);
+        databaseUtilities.addUser(contact3, networks.get(0), account3);
+
+        usernames = databaseUtilities.getUsernames();
+
+        for(int i = 0; i<accounts.size(); i++){
+            assertTrue(usernames.remove(accounts.get(i).getUsername()));
+        }
+
+        }catch (SQLException e){}
+
+    }
     // ------------------------------------------
     public static void tempMethod() throws SQLException {
 
@@ -357,6 +390,7 @@ try {
         }catch (SQLException e){}
         return false;
     }
+
 
 
     private static void seedDatabase() throws SQLException{

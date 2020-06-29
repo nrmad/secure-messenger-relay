@@ -1,4 +1,4 @@
-package networking;
+package packets;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -11,7 +11,9 @@ public class MessagePacket extends Packet implements Externalizable {
     private long sentTimeMillis;
     private String data;
 
-    public MessagePacket(){}
+    public MessagePacket(){
+        super(Type.MESSAGE);
+    }
 
     public MessagePacket(int destination, int source, long sentTimeMillis, String data) {
         super(destination, source, Type.MESSAGE);

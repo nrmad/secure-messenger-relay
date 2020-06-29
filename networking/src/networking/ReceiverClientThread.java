@@ -1,6 +1,11 @@
 package networking;
 
+import packets.AuthFailedPacket;
+import packets.AuthSuccessPacket;
+import packets.AuthenticationPacket;
+import packets.Packet;
 import datasource.Account;
+import datasource.Contact;
 import datasource.DatabaseUtilities;
 import security.SecurityUtilities;
 
@@ -14,6 +19,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
 
@@ -26,15 +32,17 @@ public class ReceiverClientThread implements Runnable {
     private final HashMap<Integer, ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap ;
     private final BlockingQueue<Packet> channel;
     private final int authIterations;
+    private final Set<String> usernames;
     private DatabaseUtilities databaseUtilities;
 
     public ReceiverClientThread(SSLSocket sslSocket, HashMap<Integer, ConcurrentMap<Integer,
             Optional<BlockingQueue<Packet>>>> networkMap
-            , BlockingQueue<Packet> channel, int authIterations) throws SQLException {
+            , BlockingQueue<Packet> channel, int authIterations, Set<String> usernames) throws SQLException {
         this.sslSocket = sslSocket;
         this.networkMap = networkMap;
         this.channel = channel;
         this.authIterations = authIterations;
+        this.usernames = usernames;
         databaseUtilities = DatabaseUtilities.getInstance();
     }
 
@@ -50,7 +58,8 @@ public class ReceiverClientThread implements Runnable {
 
                 AuthenticationPacket authenticationPacket = (AuthenticationPacket) input.readObject();
                 Account account = authenticate(authenticationPacket.getUsername(), authenticationPacket.getPassword());
-                cid = databaseUtilities.getContact(account).getCid();
+                Contact contact = databaseUtilities.getContact(account);
+                cid = contact.getCid();
                 nid = databaseUtilities.getAccountNetwork(account).getNid();
                 channelMap = networkMap.get(nid);
                 channel.put(new AuthSuccessPacket(cid, nid));
@@ -62,15 +71,23 @@ public class ReceiverClientThread implements Runnable {
                             continue;
                         switch (packet.getType()) {
                             case MESSAGE:
-                            case ACCEPT_USER:
+                            case ACCEPT_JOIN:
                                 if (channelMap.containsKey(packet.getDestination()) && (destChannel = channelMap
                                         .get(packet.getDestination())).isPresent())
-                                    destChannel.get().put(packet);
+                                    destChannel.get().offer(packet);
                                 break;
                             case END_SESSION:
                                 quit = true;
                                 channel.put(packet);
                                 break;
+                            case DELETE_ACCOUNT:
+                                    channelMap.replace(cid, Optional.empty());
+                                    databaseUtilities.deleteUser(contact);
+                                    usernames.remove(account.getUsername());
+                                    quit = true;
+                                    channel.put(packet);
+                                break;
+
                         }
                     } catch (ClassNotFoundException | IOException e) {
                     }

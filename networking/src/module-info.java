@@ -4,4 +4,5 @@ module networking {
     requires security;
     requires java.sql;
     exports networking;
+    exports packets;
 }

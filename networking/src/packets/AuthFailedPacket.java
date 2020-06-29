@@ -1,4 +1,4 @@
-package networking;
+package packets;
 
 import java.io.Externalizable;
 import java.io.ObjectInput;

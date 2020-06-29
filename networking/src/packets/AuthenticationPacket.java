@@ -1,4 +1,4 @@
-package networking;
+package packets;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -11,7 +11,9 @@ public class AuthenticationPacket extends Packet implements Externalizable {
     private String username;
     private String password;
 
-    public AuthenticationPacket(){}
+    public AuthenticationPacket(){
+        super(Type.AUTHENTICATE);
+    }
 
     public AuthenticationPacket( String username, String password) {
         super(Type.AUTHENTICATE);

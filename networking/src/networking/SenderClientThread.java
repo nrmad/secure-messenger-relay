@@ -1,5 +1,8 @@
 package networking;
 
+import packets.AuthSuccessPacket;
+import packets.Packet;
+
 import javax.net.ssl.SSLSocket;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -10,14 +13,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
 
 import static java.lang.Thread.interrupted;
-import static networking.Packet.Type.AUTH_SUCCESS;
+import static packets.Packet.Type.AUTH_SUCCESS;
 
 public class SenderClientThread implements Runnable {
 
     private final SSLSocket sslSocket;
     private final HashMap<Integer, ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap;
     private final BlockingQueue<Packet> channel;
-
 
     public SenderClientThread(SSLSocket sslSocket, HashMap<Integer, ConcurrentMap<Integer,
             Optional<BlockingQueue<Packet>>>> networkMap
@@ -54,16 +56,14 @@ public class SenderClientThread implements Runnable {
                     switch (packet.getType()) {
                         case ACK:
                         case MESSAGE:
-                        case REQUEST_USER:
+                        case REQUEST_JOIN:
                         case RELAY_SHUTDOWN:
                             output.writeObject(packet);
                             break;
+                        case DELETE_ACCOUNT:
                         case END_SESSION:
-                            if (packet.getSource() == cid) {
-                                output.writeObject(packet);
-                                channelMap.replace(cid, Optional.empty());
                                 quit = true;
-                            }
+                                output.writeObject(packet);
                             break;
                     }
                 } catch (InterruptedException e) {

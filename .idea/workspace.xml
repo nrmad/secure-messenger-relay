@@ -2,41 +2,37 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6359fa30-0bd1-4051-86c6-4df76536ea28" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/datasource/src/datasource/Port.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/networking/src/networking/AckPacket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/networking/src/networking/AuthFailedPacket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/networking/src/networking/AuthSuccessPacket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/networking/src/networking/AuthenticationPacket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/networking/src/networking/EndSessionPacket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/networking/src/networking/MessagePacket.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/networking/src/networking/ShutdownPacket.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/Packets/AcceptJoinPacket.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/Packets/CancelOperationPacket.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/Packets/DeleteAccountPacket.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/Packets/RefuseJoinPacket.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/Packets/RequestJoinPacket.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/networking/src/networking/FailedJoinException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/Account.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/Account.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/Contact.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/Contact.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilities.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/Network.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/Network.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/src/datasource/ReadPropertiesFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/src/datasource/ReadPropertiesFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/AckPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/Packets/AckPacket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/AuthFailedPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/Packets/AuthFailedPacket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/AuthSuccessPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/Packets/AuthSuccessPacket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/AuthenticationPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/Packets/AuthenticationPacket.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/networking/src/networking/ClientThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/ClientThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/EndSessionPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/Packets/EndSessionPacket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/MessagePacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/Packets/MessagePacket.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/networking/src/networking/NetworkThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/NetworkThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/Packet.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/Packet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/Packet.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/Packets/Packet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/networking/src/networking/ReceiverClientThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/ReceiverClientThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/RegisterRequestThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/RequestHandlerThread.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/RequestThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/RequestThread.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/networking/src/networking/SecureSocketManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/SecureSocketManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/networking/src/networking/SenderClientThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/networking/SenderClientThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/ThrowingConsumer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/networking/src/networking/Type.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/networking/src/networking/ShutdownPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/networking/src/Packets/ShutdownPacket.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/orchestrator/src/orchestrator/MainTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/Account.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/Account.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilities.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/DatabaseUtilitiesTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/Network.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/Network.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/datasource/datasource/ReadPropertiesFile.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/datasource/datasource/ReadPropertiesFile.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/networking/module-info.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/networking/networking/NetworkThread.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/networking/networking/Packet.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/networking/networking/RequestThread.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/networking/networking/SecureSocketManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/networking/networking/Type.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/security/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/security/module-info.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/security/security/SecurityUtilities.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/security/security/SecurityUtilities.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/security/src/security/SecurityUtilities.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -103,7 +99,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.DatabaseUtilitiesTest">
+  <component name="RunManager" selected="JUnit.DatabaseUtilitiesTest.getUsernames">
     <configuration name="DatabaseUtilitiesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="datasource" />
       <extension name="coverage">
@@ -135,22 +131,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="DatabaseUtilitiesTest.checkReady" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="datasource" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="datasource.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="datasource" />
-      <option name="MAIN_CLASS_NAME" value="datasource.DatabaseUtilitiesTest" />
-      <option name="METHOD_NAME" value="checkReady" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="DatabaseUtilitiesTest.deleteUser" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="datasource" />
       <extension name="coverage">
@@ -167,7 +147,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="DatabaseUtilitiesTest.getAllNetworks" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="DatabaseUtilitiesTest.getAccounts" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="datasource" />
       <extension name="coverage">
         <pattern>
@@ -177,7 +157,23 @@
       </extension>
       <option name="PACKAGE_NAME" value="datasource" />
       <option name="MAIN_CLASS_NAME" value="datasource.DatabaseUtilitiesTest" />
-      <option name="METHOD_NAME" value="getAllNetworks" />
+      <option name="METHOD_NAME" value="getAccounts" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DatabaseUtilitiesTest.getUsernames" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="datasource" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="datasource.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="datasource" />
+      <option name="MAIN_CLASS_NAME" value="datasource.DatabaseUtilitiesTest" />
+      <option name="METHOD_NAME" value="getUsernames" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -185,18 +181,18 @@
     </configuration>
     <list>
       <item itemvalue="JUnit.DatabaseUtilitiesTest" />
-      <item itemvalue="JUnit.DatabaseUtilitiesTest.checkReady" />
       <item itemvalue="JUnit.DatabaseUtilitiesTest.addUser" />
-      <item itemvalue="JUnit.DatabaseUtilitiesTest.getAllNetworks" />
       <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteUser" />
+      <item itemvalue="JUnit.DatabaseUtilitiesTest.getAccounts" />
+      <item itemvalue="JUnit.DatabaseUtilitiesTest.getUsernames" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.DatabaseUtilitiesTest.getUsernames" />
+        <item itemvalue="JUnit.DatabaseUtilitiesTest.getAccounts" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest.addUser" />
         <item itemvalue="JUnit.DatabaseUtilitiesTest.deleteUser" />
-        <item itemvalue="JUnit.DatabaseUtilitiesTest.getAllNetworks" />
-        <item itemvalue="JUnit.DatabaseUtilitiesTest.checkReady" />
       </list>
     </recent_temporary>
   </component>
@@ -240,12 +236,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java</url>
-          <line>221</line>
+          <line>222</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/datasource/src/datasource/DatabaseUtilitiesTest.java</url>
-          <line>257</line>
+          <line>258</line>
           <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>

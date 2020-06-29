@@ -17,6 +17,10 @@ public Contact(int cid){
     this.alias = "";
 }
 
+public Contact(String alias){
+    this.alias = alias;
+}
+
     public void setCid(int cid) {
         this.cid = cid;
     }

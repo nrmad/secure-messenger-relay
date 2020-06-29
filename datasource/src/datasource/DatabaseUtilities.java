@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DatabaseUtilities {
 
@@ -50,6 +53,7 @@ public class DatabaseUtilities {
             "accounts a ON ac.aid = a.aid WHERE a.username = ?";
     private static final String SELECT_CONTACTS = "SELECT * FROM contacts c INNER JOIN networkContacts nc ON nc.cid = c.cid " +
             "INNER JOIN networks n ON n.nid = nc.nid WHERE n.nid = ?";
+    private static final String SELECT_USERNAMES = "SELECT username FROM accounts";
     private static final String INSERT_ACCOUNT =  "INSERT INTO accounts(aid, username, password, salt, iterations) " +
             "VALUES (?,?,?,?,?)";
     private static final String INSERT_CONTACT = "INSERT INTO contacts(cid, alias) VALUES(?,?)";
@@ -75,6 +79,7 @@ public class DatabaseUtilities {
     private PreparedStatement querySelectAllNetworks;
     private PreparedStatement querySelectNetwork;
     private PreparedStatement querySelectContacts;
+    private PreparedStatement querySelectUsernames;
     private PreparedStatement queryInsertAccount;
     private PreparedStatement queryInsertContact;
     private PreparedStatement queryInsertAccountContact;
@@ -92,9 +97,9 @@ public class DatabaseUtilities {
     private PreparedStatement queryRetrieveMaxCid;
     private PreparedStatement queryRetrieveMaxAid;
 
-    private int networkCounter;
-    private int contactCounter;
-    private int accountCounter;
+//    private int networkCounter;
+    private AtomicInteger contactCounter;
+    private AtomicInteger accountCounter;
 
     private DatabaseUtilities(String username, String password) throws SQLException {
         openConnection(username, password);
@@ -137,6 +142,7 @@ public class DatabaseUtilities {
         querySelectAllNetworks = conn.prepareStatement(SELECT_ALL_NETWORKS);
         querySelectNetwork = conn.prepareStatement(SELECT_NETWORK);
         querySelectContacts = conn.prepareStatement(SELECT_CONTACTS);
+        querySelectUsernames = conn.prepareStatement(SELECT_USERNAMES);
         queryInsertAccount = conn.prepareStatement(INSERT_ACCOUNT);
         queryInsertContact = conn.prepareStatement(INSERT_CONTACT);
         queryInsertAccountContact = conn.prepareStatement(INSERT_ACCOUNT_CONTACT);
@@ -150,7 +156,7 @@ public class DatabaseUtilities {
         queryReleaseLock = conn.prepareStatement(RELEASE_LOCK);
         queryCheckReady = conn.prepareStatement(CHECK_READY);
 
-        queryRetrieveMaxNid = conn.prepareStatement(RETRIEVE_MAX_NID);
+//        queryRetrieveMaxNid = conn.prepareStatement(RETRIEVE_MAX_NID);
         queryRetrieveMaxCid = conn.prepareStatement(RETRIEVE_MAX_CID);
         queryRetrieveMaxAid = conn.prepareStatement(RETRIEVE_MAX_AID);
     }
@@ -161,15 +167,15 @@ public class DatabaseUtilities {
     private void setupCounters() throws SQLException{
 
             ResultSet result;
-            result = queryRetrieveMaxNid.executeQuery();
-            if (result.next())
-                networkCounter = result.getInt(1) + 1;
+//            result = queryRetrieveMaxNid.executeQuery();
+//            if (result.next())
+//                networkCounter = result.getInt(1) + 1;
             result = queryRetrieveMaxCid.executeQuery();
             if(result.next())
-                contactCounter = result.getInt(1) +1;
+                contactCounter = new AtomicInteger(result.getInt(1) +1);
             result = queryRetrieveMaxAid.executeQuery();
             if(result.next())
-                accountCounter = result.getInt(1) +1;
+                accountCounter = new AtomicInteger(result.getInt(1) +1);
     }
 
     private void getLock() throws SQLException{
@@ -231,6 +237,9 @@ public class DatabaseUtilities {
             if(querySelectContacts != null){
                 querySelectContacts.close();
             }
+            if(querySelectUsernames != null){
+                querySelectUsernames.close();
+            }
             if(queryInsertAccount != null){
                 queryInsertAccount.close();
             }
@@ -264,9 +273,9 @@ public class DatabaseUtilities {
             if(queryReleaseLock != null){
                 queryReleaseLock.close();
             }
-            if(queryRetrieveMaxNid != null){
-                queryRetrieveMaxNid.close();
-            }
+//            if(queryRetrieveMaxNid != null){
+//                queryRetrieveMaxNid.close();
+//            }
             if(queryRetrieveMaxCid != null){
                 queryRetrieveMaxCid.close();
             }
@@ -388,8 +397,8 @@ public class DatabaseUtilities {
         try {
             try {
                 conn.setAutoCommit(false);
-                contact.setCid(contactCounter++);
-                account.setAid(accountCounter++);
+                contact.setCid(contactCounter.getAndIncrement());
+                account.setAid(accountCounter.getAndIncrement());
                 addContact(contact);
                 addAccount(account);
                 addAccountContact(account, contact);
@@ -406,6 +415,7 @@ public class DatabaseUtilities {
     }
 
     private void addAccountContact(Account account, Contact contact) throws SQLException{
+        queryInsertAccountContact.clearParameters();
         queryInsertAccountContact.setInt(1, account.getAid());
         queryInsertAccountContact.setInt(2, contact.getCid());
         if(queryInsertAccountContact.executeUpdate() == 0)
@@ -413,6 +423,7 @@ public class DatabaseUtilities {
     }
 
     private void addAccount(Account account) throws SQLException{
+        queryInsertAccount.clearParameters();
         queryInsertAccount.setInt(1, account.getAid());
         queryInsertAccount.setString(2, account.getUsername());
         queryInsertAccount.setString(3, account.getPassword());
@@ -467,6 +478,7 @@ public class DatabaseUtilities {
     }
 
     private void deleteAccount(Contact contact) throws SQLException{
+        queryDeleteAccount.clearParameters();
         queryDeleteAccount.setInt(1, contact.getCid());
         if(queryDeleteAccount.executeUpdate() == 0)
             throw new SQLException();
@@ -474,9 +486,22 @@ public class DatabaseUtilities {
 
 
     private void deleteContact(Contact contact) throws SQLException{
+        queryDeleteContact.clearParameters();
         queryDeleteContact.setInt(1, contact.getCid());
         if (queryDeleteContact.executeUpdate() == 0)
             throw new SQLException();
     }
+
+    public Set<String> getUsernames() throws SQLException{
+        Set<String> usernames = ConcurrentHashMap.newKeySet();
+       ResultSet resultSet = querySelectUsernames.executeQuery();
+        if(resultSet.next()){
+            do {
+            usernames.add(resultSet.getString(1));
+            } while (resultSet.next());
+        }
+        return usernames;
+    }
+
 
 }

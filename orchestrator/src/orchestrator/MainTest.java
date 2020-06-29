@@ -11,7 +11,7 @@ public class MainTest {
     @After
     public void tearDown() {
 
-        databaseUtilities.tempMethod();
+//        databaseUtilities.tempMethod();
 
     }
 

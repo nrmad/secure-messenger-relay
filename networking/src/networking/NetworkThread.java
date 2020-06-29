@@ -1,27 +1,31 @@
 package networking;
 
+import packets.Packet;
+import packets.ShutdownPacket;
+
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.*;
 
 import static java.lang.Thread.interrupted;
 
 public class NetworkThread implements Runnable {
 
-    private SecureSocketManager secureSocketManager;
-    private final int tlsPort;
-    private final HashMap<Integer,ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap ;
+    private final SSLServerSocket sslServerSocket;
+    private final HashMap<Integer,ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap;
+    private final Set<String> usernames;
     private final int authIterations;
 
 
-    public NetworkThread(SecureSocketManager secureSocketManager, HashMap<Integer,ConcurrentMap<Integer,
-            Optional<BlockingQueue<Packet>>>> networkMap, int tlsPort, int authIterations) {
-        this.secureSocketManager = secureSocketManager;
-        this.tlsPort = tlsPort;
+    public NetworkThread( SSLServerSocket sslServerSocket, Set<String> usernames, HashMap<Integer,ConcurrentMap<Integer,
+            Optional<BlockingQueue<Packet>>>> networkMap, int authIterations) {
+        this.sslServerSocket = sslServerSocket;
+        this.usernames = usernames;
         this.networkMap = networkMap;
         this.authIterations = authIterations;
     }
@@ -29,18 +33,15 @@ public class NetworkThread implements Runnable {
     public void run() {
 
         ExecutorService clientThreads = Executors.newCachedThreadPool();
-        // SETUP A SECURESOCKETMANAGER INSTANCE AND ESTABLISH A SERVER SOCKET ON DESIRED PORT
 
         try {
-            SSLServerSocket sslServerSocket = secureSocketManager.getSslServerSocket(tlsPort);
-
             // BEGIN RECEIVING NEW CONNECTION INSTANCES ON THAT PORT AND LOOP
 
             while (!interrupted()) {
 
                 try {
                     SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
-                    clientThreads.execute(new ClientThread(sslSocket, networkMap, authIterations));
+                    clientThreads.execute(new ClientThread(sslSocket, usernames, networkMap, authIterations));
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -64,7 +65,7 @@ public class NetworkThread implements Runnable {
            if(!clientThreads.awaitTermination(3, TimeUnit.MINUTES))
                clientThreads.shutdownNow();
 
-        } catch (IOException | InterruptedException e) {
+        } catch ( InterruptedException e) {
             clientThreads.shutdownNow();
         }
     }

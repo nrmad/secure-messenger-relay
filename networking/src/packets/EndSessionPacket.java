@@ -1,22 +1,22 @@
-package networking;
+package packets;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
-public class ShutdownPacket extends Packet implements Externalizable {
 
+public class EndSessionPacket extends Packet implements Externalizable {
 
-    public static final long serialVersionUID = 10005L;
+    public static final long serialVersionUID = 10007L;
 
-    public ShutdownPacket(){}
-
-    public ShutdownPacket(int destination, int source) {
-        super(destination, source, Type.RELAY_SHUTDOWN);
-
+    public EndSessionPacket(){
+        super(Type.END_SESSION);
     }
 
+    public EndSessionPacket(int destination, int source) {
+        super(destination, source, Type.END_SESSION);
+    }
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
