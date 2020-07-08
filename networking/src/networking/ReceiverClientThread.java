@@ -1,12 +1,12 @@
 package networking;
 
+import datasource.Account;
+import datasource.Contact;
+import datasource.DatabaseUtilities;
 import packets.AuthFailedPacket;
 import packets.AuthSuccessPacket;
 import packets.AuthenticationPacket;
 import packets.Packet;
-import datasource.Account;
-import datasource.Contact;
-import datasource.DatabaseUtilities;
 import security.SecurityUtilities;
 
 import javax.net.ssl.SSLSocket;
@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Phaser;
 
 import static java.lang.Thread.interrupted;
 
@@ -33,27 +34,33 @@ public class ReceiverClientThread implements Runnable {
     private final BlockingQueue<Packet> channel;
     private final int authIterations;
     private final Set<String> usernames;
+    private final Phaser conPhaser;
     private DatabaseUtilities databaseUtilities;
 
     public ReceiverClientThread(SSLSocket sslSocket, HashMap<Integer, ConcurrentMap<Integer,
             Optional<BlockingQueue<Packet>>>> networkMap
-            , BlockingQueue<Packet> channel, int authIterations, Set<String> usernames) throws SQLException {
+            , BlockingQueue<Packet> channel, int authIterations, Set<String> usernames, Phaser conPhaser)
+            throws SQLException {
         this.sslSocket = sslSocket;
         this.networkMap = networkMap;
         this.channel = channel;
         this.authIterations = authIterations;
         this.usernames = usernames;
+        this.conPhaser = conPhaser;
         databaseUtilities = DatabaseUtilities.getInstance();
+//        conPhaser.register();
     }
 
     public void run() {
         boolean quit = false;
         Optional<BlockingQueue<Packet>> destChannel;
         ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>> channelMap;
-        int cid, nid;
+        int cid, nid, aid;
         Packet packet;
 
         try {
+            conPhaser.arriveAndAwaitAdvance();
+            conPhaser.arriveAndDeregister();
             try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(sslSocket.getInputStream()))) {
 
                 AuthenticationPacket authenticationPacket = (AuthenticationPacket) input.readObject();
@@ -61,8 +68,9 @@ public class ReceiverClientThread implements Runnable {
                 Contact contact = databaseUtilities.getContact(account);
                 cid = contact.getCid();
                 nid = databaseUtilities.getAccountNetwork(account).getNid();
+                aid = account.getAid();
                 channelMap = networkMap.get(nid);
-                channel.put(new AuthSuccessPacket(cid, nid));
+                channel.put(new AuthSuccessPacket(cid, nid, aid));
 
                 while (!quit && !interrupted()) {
                     try {
@@ -103,7 +111,8 @@ public class ReceiverClientThread implements Runnable {
             throws SQLException, GeneralSecurityException {
         Account account = new Account(username);
         account = databaseUtilities.getAccount(account);
-        String hashPassword = SecurityUtilities.getAuthenticationHash(password, account.getSalt(), account.getIterations());
+        String hashPassword = SecurityUtilities.getAuthenticationHash(password, account.getSalt(),
+                account.getIterations());
         if (account.getPassword().equals(hashPassword)) {
             if (account.getIterations() != authIterations) {
                 List<String> updatedCredentials = SecurityUtilities.getAuthenticationHash(password, authIterations);

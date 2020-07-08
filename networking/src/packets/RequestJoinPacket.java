@@ -11,7 +11,6 @@ public class RequestJoinPacket extends Packet implements Externalizable {
     private String username;
     private String password;
     private String alias;
-    private int nid;
     private int cid;
 
     public RequestJoinPacket(){
@@ -35,9 +34,6 @@ public class RequestJoinPacket extends Packet implements Externalizable {
         return alias;
     }
 
-    public int getNid() {
-        return nid;
-    }
 
     public int getCid() {
         return cid;
@@ -55,7 +51,6 @@ public class RequestJoinPacket extends Packet implements Externalizable {
         username = in.readUTF();
         password = in.readUTF();
         alias = in.readUTF();
-        nid = in.readInt();
         cid = in.readInt();
     }
 }

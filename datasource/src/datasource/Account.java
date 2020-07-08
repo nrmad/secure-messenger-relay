@@ -1,15 +1,21 @@
 package datasource;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Objects;
 
-public class Account {
+public class Account implements Externalizable {
 
+    public static final long serialVersionUID = 10100L;
     private int aid;
     private String username;
     private String password;
     private String salt;
     private int iterations;
 
+    public Account(){}
 
     public Account(int aid, String username, String password, String salt, int iterations) {
         this.aid = aid;
@@ -37,6 +43,7 @@ public class Account {
         this.salt = "";
         this.iterations = -1;
     }
+
     public void setAid(int aid) {
         this.aid = aid;
     }
@@ -59,6 +66,16 @@ public class Account {
 
     public int getIterations() {
         return iterations;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out)throws IOException {
+        out.writeInt(aid);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException {
+
     }
 
     @Override

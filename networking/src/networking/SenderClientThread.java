@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Phaser;
 
 import static java.lang.Thread.interrupted;
 import static packets.Packet.Type.AUTH_SUCCESS;
@@ -20,13 +21,16 @@ public class SenderClientThread implements Runnable {
     private final SSLSocket sslSocket;
     private final HashMap<Integer, ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> networkMap;
     private final BlockingQueue<Packet> channel;
+    private final Phaser conPhaser;
 
     public SenderClientThread(SSLSocket sslSocket, HashMap<Integer, ConcurrentMap<Integer,
             Optional<BlockingQueue<Packet>>>> networkMap
-            , BlockingQueue<Packet> channel) {
+            , BlockingQueue<Packet> channel, Phaser conPhaser) {
         this.sslSocket = sslSocket;
         this.networkMap = networkMap;
         this.channel = channel;
+        this.conPhaser = conPhaser;
+//        conPhaser.register();
     }
 
     public void run() {
@@ -37,13 +41,14 @@ public class SenderClientThread implements Runnable {
         ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>> channelMap;
 
         try (ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(sslSocket.getOutputStream()))) {
-
+                conPhaser.arriveAndDeregister();
                 packet = channel.take();
                 if (packet.getType() == AUTH_SUCCESS) {
                     cid = ((AuthSuccessPacket) packet).getCid();
                     nid = ((AuthSuccessPacket) packet).getNid();
                     channelMap = networkMap.get(nid);
                     channelMap.replace(cid, Optional.of(channel));
+                    // AUTH SUCCESS PACKET SHOULD CONTAIN CONTACT LIST
                     output.writeObject(packet);
                 } else {
                     output.writeObject(packet);

@@ -18,12 +18,13 @@ public class SecureSocketManager {
 
     private static SSLContext sslContext = null;
 
-    public SecureSocketManager(KeyStore keystore, String password) throws IOException, GeneralSecurityException
+    public SecureSocketManager(KeyStore keystore, String password) throws GeneralSecurityException
     {
         initContext(keystore, password);
     }
 
     // IF THIS FAILS SO SHOULD LOGIN BECAUSE NO CONNECTIONS WILL BE ATTAINABLE WITHOUT THE SSLCONTEXT
+
     private static void initContext(KeyStore keystore, String password)
             throws GeneralSecurityException
     {

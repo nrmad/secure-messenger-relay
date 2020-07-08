@@ -1,14 +1,19 @@
 package datasource;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Objects;
 
-public class Network {
+public class Network implements Externalizable {
 
+    public static final long serialVersionUID = 10102L;
     private int nid;
-
     private Port port;
-
     private String network_alias;
+
+    public Network(){}
 
     public Network(int nid){
         this.nid = nid;
@@ -46,6 +51,19 @@ public class Network {
     public void setNetworkAlias(String network_alias) {
         this.network_alias = network_alias;
     }
+
+    @Override
+    public void writeExternal(ObjectOutput out)throws IOException {
+        out.writeInt(nid);
+        out.writeObject(port);
+        out.writeUTF(network_alias);
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException {
+
+    }
+
 
     @Override
     public boolean equals(Object o) {

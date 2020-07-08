@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="bctls-jdk15on-165">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/bctls-jdk15on-165.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

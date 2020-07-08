@@ -10,6 +10,7 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v1CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
@@ -19,7 +20,6 @@ import javax.security.auth.x500.X500Principal;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.security.spec.RSAKeyGenParameterSpec;
 import java.util.ArrayList;
@@ -39,13 +39,14 @@ public class SecurityUtilities {
     private static final String SIGNATURE_ALG = "SHA384with" + ASYMMETRIC_KEY_ALG;
     private static final String SECURE_RANDOM_ALG = "SHA1PRNG";
     private static final String AUTH_HASH_DIGEST_ALG = "PBKDF2WithHmacSHA512";
-    private static final File TRUSTSTORE_NAME = new File("/var/lib/secure-messenger-relay/truststore.p12");
+//    private static final File TRUSTSTORE_NAME = new File("/var/lib/secure-messenger-relay/truststore.p12");
     private static final File KEYSTORE_NAME = new File("/var/lib/secure-messenger-relay/keystore.p12");
 
-//    private static final int NUM_ITERATIONS = 100000;
     private static long serialNumberBase = System.currentTimeMillis();
 
-
+    static{
+        Security.addProvider(new BouncyCastleProvider());
+    }
     // APPARENTLY FUNCTIONALITY TO UPDATE KS PASSWORDS IS GOOD
 
     public static KeyStore.PrivateKeyEntry loadKeyEntry(String storePassword, String fingerprint)
@@ -56,44 +57,6 @@ public class SecurityUtilities {
         return (KeyStore.PrivateKeyEntry) keystore.getEntry(fingerprint, keyPassword);
     }
 
-    /**
-     * A workaround for not being able select the key entry for the KeyManager
-     * @param keyStore The saved keystore with all the private key entries for each network
-     * @param storePassword the password
-     * @param fingerprint the cert fingerprint
-     * @return the singleton keystore
-     * @throws GeneralSecurityException
-     * @throws IOException
-     */
-    public static KeyStore loadSingleKeystore(KeyStore keyStore, String storePassword, String fingerprint)
-            throws GeneralSecurityException, IOException
-    {
-        KeyStore.ProtectionParameter keyPassword = new KeyStore.PasswordProtection(storePassword.toCharArray());
-        KeyStore.PrivateKeyEntry pke = (KeyStore.PrivateKeyEntry) keyStore.getEntry(fingerprint, keyPassword);
-        KeyStore singleKeystore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
-        singleKeystore.load(null, null);
-        singleKeystore.setEntry(fingerprint, pke, keyPassword);
-        return singleKeystore;
-    }
-
-    /**
-     * A workaround for not being able to select the certificate entry for the TrustManager
-     * @param truststore the saved truststore with all the trusted certificat entries for each network
-     * @param fingerprint the cert fingerprint
-     * @return the singleton keystore
-     * @throws GeneralSecurityException
-     * @throws IOException
-     */
-    public static KeyStore loadSingleTruststore(KeyStore truststore, String fingerprint)
-        throws GeneralSecurityException, IOException
-    {
-        Certificate cert = truststore.getCertificate(fingerprint);
-        KeyStore singleKeystore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
-        singleKeystore.load(null, null);
-        singleKeystore.setCertificateEntry(fingerprint, cert);
-        return singleKeystore;
-    }
-
     public static KeyStore loadKeystore(String storePassword)
             throws GeneralSecurityException, IOException
     {
@@ -101,12 +64,12 @@ public class SecurityUtilities {
         return load(password, KEYSTORE_NAME);
     }
 
-    public static KeyStore loadTruststore(String storePassword)
-            throws GeneralSecurityException, IOException
-    {
-        char[] password = storePassword.toCharArray();
-        return load(password,   TRUSTSTORE_NAME);
-    }
+//    public static KeyStore loadTruststore(String storePassword)
+//            throws GeneralSecurityException, IOException
+//    {
+//        char[] password = storePassword.toCharArray();
+//        return load(password,   TRUSTSTORE_NAME);
+//    }
 
     private static KeyStore load(char[] password, File store)
             throws GeneralSecurityException, IOException
@@ -119,18 +82,18 @@ public class SecurityUtilities {
     }
 
 
-    /**
-     * Calls deleteEntry with truststore name
-     * @param storePassword the store password
-     * @param fingerprint the certificate fingerprint
-     * @throws GeneralSecurityException
-     * @throws IOException
-     */
-    public static void deleteCertificate(String storePassword, String fingerprint)
-            throws GeneralSecurityException, IOException
-    {
-        deleteEntry(storePassword, fingerprint, TRUSTSTORE_NAME);
-    }
+//    /**
+//     * Calls deleteEntry with truststore name
+//     * @param storePassword the store password
+//     * @param fingerprint the certificate fingerprint
+//     * @throws GeneralSecurityException
+//     * @throws IOException
+//     */
+//    public static void deleteCertificate(String storePassword, String fingerprint)
+//            throws GeneralSecurityException, IOException
+//    {
+//        deleteEntry(storePassword, fingerprint, TRUSTSTORE_NAME);
+//    }
 
     /**
      * Calls deleteEntry with the keystore name
@@ -166,29 +129,29 @@ public class SecurityUtilities {
 
     }
 
-    /**
-     * Store the trusted certificate for a particular network to the truststore.p12 file
-     * @param storePassword the truststore password
-     * @param trustedCert the trusted certificate
-     * @param fingerprint the certificate fingerprint for identification
-     * @throws GeneralSecurityException
-     * @throws IOException
-     */
-    public static void storeCertificate(String storePassword, X509Certificate trustedCert, String fingerprint)
-            throws GeneralSecurityException, IOException
-    {
-        char[] password = storePassword.toCharArray();
-        KeyStore truststore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
-        try {
-            truststore.load(new FileInputStream(TRUSTSTORE_NAME), password);
-        }catch (IOException e) {
-            truststore.load(null, null);
-        }
-        truststore.setCertificateEntry(fingerprint, trustedCert);
-        try(FileOutputStream os = new FileOutputStream( TRUSTSTORE_NAME)) {
-            truststore.store(os, password);
-        }
-    }
+//    /**
+//     * Store the trusted certificate for a particular network to the truststore.p12 file
+//     * @param storePassword the truststore password
+//     * @param trustedCert the trusted certificate
+//     * @param fingerprint the certificate fingerprint for identification
+//     * @throws GeneralSecurityException
+//     * @throws IOException
+//     */
+//    public static void storeCertificate(String storePassword, X509Certificate trustedCert, String fingerprint)
+//            throws GeneralSecurityException, IOException
+//    {
+//        char[] password = storePassword.toCharArray();
+//        KeyStore truststore = KeyStore.getInstance(KEYSTORE_TYPE, PROVIDER);
+//        try {
+//            truststore.load(new FileInputStream(TRUSTSTORE_NAME), password);
+//        }catch (IOException e) {
+//            truststore.load(null, null);
+//        }
+//        truststore.setCertificateEntry(fingerprint, trustedCert);
+//        try(FileOutputStream os = new FileOutputStream( TRUSTSTORE_NAME)) {
+//            truststore.store(os, password);
+//        }
+//    }
 
     /**
      * Store the private key and certificate chain for a network in the keystore.p12 file

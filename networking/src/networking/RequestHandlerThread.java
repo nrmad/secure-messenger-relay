@@ -39,29 +39,30 @@ public class RequestHandlerThread implements Runnable {
     public void run() {
 
 
-        try (ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(sslSocket.getInputStream()));
-             ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(sslSocket.getOutputStream()))) {
+        try (ObjectOutputStream output = new ObjectOutputStream(new BufferedOutputStream(sslSocket.getOutputStream()));
+             ObjectInputStream input = new ObjectInputStream(new BufferedInputStream(sslSocket.getInputStream()))) {
 
 
             RequestJoinPacket requestJoinPacket;
             // RECEIVE DATA FROM THE CLIENT
             requestJoinPacket = (RequestJoinPacket) input.readObject();
             Optional<ConcurrentMap<Integer, Optional<BlockingQueue<Packet>>>> channelMap = Optional.empty();
-            int requestId = getNextRequestId();
+            int requestId = getNextRequestId(), nid;
 
 
             try {
                 // VALIDATE THE DATA ELSE RESPOND FAIL
 
                 BlockingQueue<Packet> sendChannel, receiveChannel;
-                // HAD TO ADD PLACEHOLDER VALUE BECAUSE COMPILER MUH DUMB
                 Packet result;
+                nid = databaseUtilities.getNid(requestJoinPacket.getCid());
+
+                // GET NETWORK FROM CID
 
                 if (namePattern.matcher(requestJoinPacket.getAlias()).matches() &&
                         namePattern.matcher(requestJoinPacket.getUsername()).matches() &&
                         passPattern.matcher(requestJoinPacket.getPassword()).matches() &&
-                        networkMap.containsKey(requestJoinPacket.getNid()) &&
-                        (channelMap = Optional.of(networkMap.get(requestJoinPacket.getNid()))).get().containsKey(requestJoinPacket.getCid()) &&
+                        (channelMap = Optional.of(networkMap.get(nid))).get().containsKey(requestJoinPacket.getCid()) &&
                         channelMap.get().get(requestJoinPacket.getCid()).isPresent() &&
                         usernames.add(requestJoinPacket.getUsername())) {
 
@@ -82,10 +83,10 @@ public class RequestHandlerThread implements Runnable {
                     throw new FailedJoinException("user inactive or busy");
                 }
                 // IF USER DID NOT EXIST RESPOND FAIL / IF THEY DECLINE RESPOND FAIL
+                // NEED TO FIND A TIMEOUT FOR THESE THREADS OR THEY'LL ACCUMULATE
 
                 Callable<Packet> waitForResponse = receiveChannel::take;
 
-                // ??? PROBLEM WITH POTENTIAL FOR USER TO LOG OFF BETWEEN THIS TIME
                 Callable<Packet> waitForCancel = () -> {
                     return (CancelOperationPacket) input.readObject();
                 };
@@ -106,11 +107,14 @@ public class RequestHandlerThread implements Runnable {
                     List<String> auth = SecurityUtilities.getAuthenticationHash(requestJoinPacket.getPassword(), authIterations);
                     Account account = new Account(requestJoinPacket.getUsername(), auth.get(0), auth.get(1),authIterations);
                     Contact contact = new Contact(requestJoinPacket.getAlias());
-                    Network network = new Network(requestJoinPacket.getNid());
+                    Network network = new Network(nid);
+                    List<Contact> contacts = databaseUtilities.getNetworkContacts(network);
                     if(databaseUtilities.addUser(contact, network, account)){
+                        account = databaseUtilities.getAccount(account);
                         contact = databaseUtilities.getContact(account);
                         channelMap.get().put(contact.getCid(), Optional.empty());
-                        output.writeObject(new AuthSuccessPacket());
+                        // SHOULD SEND AN UPDATE TO EVERYONE ON THE NETWORK THIS CONTACT IS ADDED
+                        output.writeObject(new AcceptJoinPacket(contact, network, account, contacts));
                     }
                 } else{
                     throw new FailedJoinException("unspecified failure");

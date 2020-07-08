@@ -53,21 +53,20 @@ public class Main {
 
                 }
 
-            // START NEW NETWORKTHREAD ??? NEED TO KNOW ABOUT LINUX SERVICES SHOULD THIS OBJECT BE RETAINED
             SSLServerSocket sslServerSocket = secureSocketManager.getSslServerSocket(networks.get(0).getPort().getTLSPort());
             threadManager.execute(new NetworkThread(sslServerSocket, usernames, networkMap,propertiesFile.getAuthIterations()));
 
             // INIT REQUEST THREAD
 
-            sslServerSocket = secureSocketManager.getSslServerSocket(registration.getPort().getTLSPort());
-            threadManager.execute(new RequestThread(sslServerSocket, networkMap, usernames, propertiesFile.getAuthIterations()));
+            SSLServerSocket sslRegServerSocket = secureSocketManager.getSslServerSocket(registration.getPort().getTLSPort());
+            threadManager.execute(new RequestThread(sslRegServerSocket, networkMap, usernames, propertiesFile.getAuthIterations()));
 
 
             // ADD SIGTERM HOOK
 
-                Runtime.getRuntime().addShutdownHook(new ShutdownHook(threadManager));
+                Runtime.getRuntime().addShutdownHook(new ShutdownHook(threadManager, sslServerSocket, sslRegServerSocket));
 
-            databaseUtilities.closeConnection();
+//            databaseUtilities.closeConnection();
 
         } catch (SQLException | GeneralSecurityException | IOException e) {
             // WILL HANDLE FAILED DELETE

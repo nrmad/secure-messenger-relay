@@ -1,24 +1,28 @@
 package packets;
 
 import java.io.Externalizable;
+import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 public class AuthSuccessPacket extends Packet implements Externalizable {
 
     public static final long serialVersionUID = 10003L;
-    private int cid;
-    private int nid;
+    int cid;
+    int nid;
+    int aid;
 
-    public AuthSuccessPacket(int cid, int nid){
+    public AuthSuccessPacket(){
+        super(Type.AUTH_SUCCESS);
+    }
+
+    public AuthSuccessPacket(int cid, int nid, int aid){
         super(Type.AUTH_SUCCESS);
         this.cid = cid;
         this.nid = nid;
+        this.aid = aid;
     }
 
-    public AuthSuccessPacket() {
-        super(Type.AUTH_SUCCESS);
-    }
 
     public int getCid() {
         return cid;
@@ -28,12 +32,13 @@ public class AuthSuccessPacket extends Packet implements Externalizable {
         return nid;
     }
 
-
     @Override
-    public void writeExternal(ObjectOutput out) {
+    public void writeExternal(ObjectOutput out)throws IOException {
+        out.writeInt(aid);
     }
 
     @Override
-    public void readExternal(ObjectInput in)  {
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+
     }
 }

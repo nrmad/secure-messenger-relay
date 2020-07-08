@@ -39,10 +39,12 @@ public class RequestThread implements Runnable {
             while (!interrupted()) {
                 try {
                     SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
-                    registerRequestThreads.submit(new RequestHandlerThread(sslSocket, networkMap, usernames, authIterations));
+                    registerRequestThreads.submit(new RequestHandlerThread(sslSocket, networkMap, usernames,
+                            authIterations));
                 }catch (IOException | SQLException e){}
             }
-            // SHUTDOWN CODE HERE
+            registerRequestThreads.shutdownNow();
+
     }
 
 }

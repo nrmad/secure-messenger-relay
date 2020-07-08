@@ -27,7 +27,7 @@ public class DatabaseUtilities {
             "cid INTEGER, PRIMARY KEY(aid,cid), FOREIGN KEY(aid) REFERENCES accounts(aid) ON DELETE CASCADE, " +
             "FOREIGN KEY(cid) REFERENCES contacts(cid) ON DELETE CASCADE)";
     private static final String CREATE_ACCOUNTS = "CREATE TABLE IF NOT EXISTS accounts(aid INTEGER PRIMARY KEY, " +
-            "username VARCHAR(255) UNIQUE NOT NULL, password TEXT, salt CHAR(84) NOT NULL, iterations INTEGER NOT NULL)";
+            "username VARCHAR(255) UNIQUE NOT NULL, password TEXT, salt CHAR(88) NOT NULL, iterations INTEGER NOT NULL)";
     private static final String CREATE_CONTACTS = "CREATE TABLE IF NOT EXISTS contacts(cid INTEGER PRIMARY KEY, " +
             "alias VARCHAR(255) NOT NULL)";
     private static final String CREATE_PORTS = "CREATE TABLE IF NOT EXISTS ports(pid INTEGER PRIMARY KEY, " +
@@ -63,15 +63,16 @@ public class DatabaseUtilities {
             "accounts.aid = ac.aid WHERE ac.cid = ?";
     private static final String DELETE_CONTACT = "DELETE FROM contacts WHERE cid = ?";
     private static final String SELECT_ACCOUNT = "SELECT * FROM accounts WHERE username = ? ";
-    private static final String SELECT_CONTACT = "SELECT cid FROM contacts c INNER JOIN accountContact ac ON c.cid = ac.cid " +
+    private static final String SELECT_CONTACT = "SELECT c.cid FROM contacts c INNER JOIN accountContact ac ON c.cid = ac.cid " +
             "INNER JOIN accounts a ON ac.aid = a.aid WHERE a.username = ?";
+    private static final String SELECT_NID = "SELECT n.nid FROM networks n INNER JOIN networkContacts nc ON n.nid = nc.nid " +
+            "WHERE nc.cid = ?";
     private static final String UPDATE_ACCOUNT_CREDENTIALS = "UPDATE accounts SET password = ?, salt = ?, iterations = ?" +
             " WHERE aid = ?";
     // ALSO UPDATE PASSWORD AND ENFORCE TWO RECORDS
     private static final String CHECK_READY = " SELECT IF(EXISTS(SELECT * FROM networks WHERE nid = ? AND network_alias " +
             "= ? AND (SELECT COUNT(nid) FROM networks) > 1), 1, 0)";
 
-    private static final String RETRIEVE_MAX_NID = "SELECT COALESCE(MAX(nid), 0) FROM networks";
     private static final String RETRIEVE_MAX_CID = "SELECT COALESCE(MAX(cid), 0) FROM contacts";
     private static final String RETRIEVE_MAX_AID = "SELECT COALESCE(MAX(aid), 0) FROM accounts";
 
@@ -88,6 +89,7 @@ public class DatabaseUtilities {
     private PreparedStatement queryDeleteAccount;
     private PreparedStatement querySelectAccount;
     private PreparedStatement querySelectContact;
+    private PreparedStatement querySelectNid;
     private PreparedStatement queryUpdateAccountCredentials;
     private static PreparedStatement queryGetLock;
     private static PreparedStatement queryReleaseLock;
@@ -151,6 +153,7 @@ public class DatabaseUtilities {
         queryDeleteAccount = conn.prepareStatement(DELETE_ACCOUNT);
         querySelectAccount = conn.prepareStatement(SELECT_ACCOUNT);
         querySelectContact = conn.prepareStatement(SELECT_CONTACT);
+        querySelectNid = conn.prepareStatement(SELECT_NID);
         queryUpdateAccountCredentials = conn.prepareStatement(UPDATE_ACCOUNT_CREDENTIALS);
         queryGetLock = conn.prepareStatement(GET_LOCK);
         queryReleaseLock = conn.prepareStatement(RELEASE_LOCK);
@@ -259,10 +262,13 @@ public class DatabaseUtilities {
                 queryDeleteAccount.close();
             }
             if(querySelectAccount != null){
-                querySelectContact.close();
+                querySelectAccount.close();
             }
             if(querySelectContact != null){
                 querySelectContact.close();
+            }
+            if(querySelectNid != null){
+                querySelectNid.close();
             }
             if(queryUpdateAccountCredentials != null){
                 queryUpdateAccountCredentials.close();
@@ -307,6 +313,18 @@ public class DatabaseUtilities {
     }
 
 
+    // ADD A TEST FOR THIS
+    public int getNid(int cid)throws SQLException{
+        querySelectNid.clearParameters();
+        querySelectNid.setInt(1, cid);
+        ResultSet resultSet = querySelectNid.executeQuery();
+        if(resultSet.next()){
+            return resultSet.getInt(1);
+        } else{
+            throw new SQLException();
+        }
+
+    }
 
     public List<Network> getAllNetworks() throws SQLException {
 
@@ -379,7 +397,7 @@ public class DatabaseUtilities {
     public Contact getContact(Account account) throws SQLException{
         querySelectContact.clearParameters();
         querySelectContact.setString(1, account.getUsername());
-        ResultSet resultSet = queryDeleteContact.executeQuery();
+        ResultSet resultSet = querySelectContact.executeQuery();
         if(resultSet.next())
             return new Contact(resultSet.getInt(1));
         else
